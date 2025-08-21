@@ -1,0 +1,295 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+import {useEffect, useState, useCallback, useRef} from 'react'
+import shuffle from 'lodash.shuffle'
+import c from 'clsx'
+import modes from '../lib/modes'
+import models from '../lib/models'
+import useStore from '../lib/store'
+import {
+  addRound,
+  setOutputMode,
+  setBatchSize,
+  setBatchModel,
+  reset
+} from '../lib/actions'
+import {isTouch, isIframe} from '../lib/consts'
+import FeedItem from './FeedItem'
+import Intro from './Intro'
+
+export default function App() {
+  const feed = useStore.use.feed()
+  const outputMode = useStore.use.outputMode()
+  const batchModel = useStore.use.batchModel()
+  const batchSize = useStore.use.batchSize()
+
+  const [presets, setPresets] = useState([])
+  const [showPresets, setShowPresets] = useState(false)
+  const [showStyles, setShowStyles] = useState(false)
+  const [showModels, setShowModels] = useState(false)
+  const [isDark, setIsDark] = useState(true)
+
+  const inputRef = useRef(null)
+
+  const shufflePresets = useCallback(
+    () => setPresets(shuffle(modes[outputMode].presets)),
+    [outputMode]
+  )
+
+  const onModifyPrompt = useCallback(prompt => {
+    inputRef.current.value = prompt
+    input.current.focus()
+  }, [])
+
+  const toggleTheme = useCallback(() => {
+    setIsDark(!isDark)
+  }, [isDark])
+
+  const handleGenerate = useCallback(() => {
+    const prompt = inputRef.current?.value
+    if (prompt) {
+      addRound(prompt)
+      inputRef.current.blur()
+    }
+  }, [])
+
+  useEffect(() => {
+    shufflePresets()
+  }, [shufflePresets])
+
+  useEffect(() => {
+    if (isTouch) {
+      addEventListener('touchstart', () => {
+        setShowStyles(false)
+        setShowPresets(false)
+        setShowModels(false)
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isIframe) {
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
+    }
+  }, [isDark])
+
+  return (
+    <div className={isIframe ? '' : isDark ? 'dark' : 'light'}>
+      <header>
+        <div>
+          <h1>
+            <p>
+              AI Thumbnail<span>🖼️</span>
+            </p>
+            <p>Maker</p>
+          </h1>
+        </div>
+
+        <div
+          className="selectorWrapper"
+          onMouseEnter={!isTouch && (() => setShowStyles(true))}
+          onMouseLeave={!isTouch && (() => setShowStyles(false))}
+          onTouchStart={
+            isTouch
+              ? e => {
+                  e.stopPropagation()
+                  setShowStyles(s => !s)
+                  setShowPresets(false)
+                  setShowModels(false)
+                }
+              : null
+          }
+        >
+          <p>
+            {modes[outputMode].emoji} {modes[outputMode].name}
+          </p>
+          <div className={c('selector', {active: showStyles})}>
+            <ul>
+              {Object.keys(modes).map(key => (
+                <li key={key}>
+                  <button
+                    className={c('chip', {primary: key === outputMode})}
+                    onClick={() => {
+                      setOutputMode(key)
+                      setShowStyles(false)
+                    }}
+                  >
+                    {modes[key].emoji} {modes[key].name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="label">Style</div>
+        </div>
+
+        <div
+          className="selectorWrapper"
+          onMouseEnter={!isTouch && (() => setShowModels(true))}
+          onMouseLeave={!isTouch && (() => setShowModels(false))}
+          onTouchStart={
+            isTouch
+              ? e => {
+                  e.stopPropagation()
+                  setShowModels(s => !s)
+                  setShowStyles(false)
+                  setShowPresets(false)
+                }
+              : null
+          }
+        >
+          <p>{models[batchModel].name}</p>
+          <div className={c('selector', {active: showModels})}>
+            <ul>
+              {Object.keys(models).map(key => (
+                <li key={key}>
+                  <button
+                    className={c('chip', {primary: key === batchModel})}
+                    onClick={() => {
+                      setBatchModel(key)
+                      setShowModels(false)
+                    }}
+                  >
+                    {models[key].name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="label">Model</div>
+        </div>
+
+        <div
+          className="selectorWrapper prompt"
+          onMouseEnter={!isTouch && (() => setShowPresets(true))}
+          onMouseLeave={!isTouch && (() => setShowPresets(false))}
+          onTouchStart={
+            isTouch
+              ? e => {
+                  e.stopPropagation()
+                  setShowPresets(s => !s)
+                  setShowStyles(false)
+                  setShowModels(false)
+                }
+              : null
+          }
+        >
+          <input
+            className="promptInput"
+            placeholder="Describe your thumbnail"
+            onFocus={!isTouch && (() => setShowPresets(false))}
+            ref={inputRef}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleGenerate()
+              }
+            }}
+          />
+          <div className={c('selector', {active: showPresets})}>
+            <ul className="presets wrapped">
+              <li>
+                <button
+                  onClick={() => {
+                    const randomPrompt =
+                      presets[Math.floor(Math.random() * presets.length)]
+                        .prompt
+                    addRound(randomPrompt)
+                    setShowPresets(false)
+                  }}
+                  className="chip primary"
+                >
+                  <span className="icon">Ifl</span>
+                  Random prompt
+                </button>
+              </li>
+
+              {presets.map(({label, prompt}) => (
+                <li key={label}>
+                  <button
+                    onClick={() => {
+                      addRound(prompt)
+                      setShowPresets(false)
+                    }}
+                    className="chip"
+                  >
+                    {label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="label">Prompt</div>
+        </div>
+
+        <div>
+          <button
+            className="button primary generate-button"
+            onClick={handleGenerate}
+          >
+            <span className="icon">auto_awesome</span> Generate
+          </button>
+          <div className="label">&nbsp;</div>
+        </div>
+
+        <div>
+          <div className="rangeWrap">
+            <div className="batchSize">
+              <input
+                type="range"
+                min={1}
+                max={4}
+                value={batchSize}
+                onChange={e => setBatchSize(e.target.valueAsNumber)}
+              />{' '}
+              {batchSize}
+            </div>
+          </div>
+          <div className="label">Variations</div>
+        </div>
+
+        <div>
+          <button
+            className="circleButton resetButton"
+            onClick={() => {
+              reset()
+              inputRef.current.value = ''
+            }}
+          >
+            <span className="icon">replay</span>
+          </button>
+          <div className="label">Reset</div>
+        </div>
+
+        {!isIframe && (
+          <div>
+            <button className="circleButton resetButton" onClick={toggleTheme}>
+              <span className="icon">
+                {isDark ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
+            <div className="label">Theme</div>
+          </div>
+        )}
+      </header>
+
+      <main>
+        {feed.length ? (
+          <ul className="feed">
+            {feed.map(round => (
+              <FeedItem
+                key={round.id}
+                round={round}
+                onModifyPrompt={onModifyPrompt}
+              />
+            ))}
+          </ul>
+        ) : (
+          <Intro />
+        )}
+      </main>
+    </div>
+  )
+}

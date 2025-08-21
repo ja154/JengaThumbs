@@ -18,7 +18,8 @@ export default createSelectorFunctions(
       batchMode: true,
       batchSize: 3,
       batchModel: Object.keys(models)[0],
-      versusModels: {}
+      versusModels: {},
+      fullscreenImageUrl: null
     }))
   )
 )

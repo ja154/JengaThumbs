@@ -26,7 +26,10 @@ export default limitFunction(
         const base64ImageBytes = response.generatedImages[0].image.imageBytes
         return `data:image/png;base64,${base64ImageBytes}`
       } catch (error) {
-        console.error(`Attempt ${attempt + 1} failed for model ${model}:`, error)
+        console.error(
+          `Attempt ${attempt + 1} failed for model ${model}:`,
+          error
+        )
         if (attempt === maxRetries - 1) {
           throw error
         }

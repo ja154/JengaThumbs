@@ -59,7 +59,7 @@ export default function FeedItem({round, onModifyPrompt}) {
       <ul className="outputs">
         {round.outputs.map(output => (
           <li key={output.id}>
-            <ModelOutput {...output} />
+            <ModelOutput roundId={round.id} output={output} />
           </li>
         ))}
       </ul>

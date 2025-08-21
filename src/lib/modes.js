@@ -9,47 +9,69 @@ const f = s =>
     .replaceAll(/\n{3,}/g, '\n\n')
     .trim()
 
+const baseInstruction = `You are an expert graphic designer creating a 16:9 YouTube thumbnail. The final image must be professional, high-resolution, and visually compelling. Key requirements are: 1) A clear, engaging subject. 2) Large, bold, and easily readable text that is a core part of the design. 3) A dynamic composition that draws the viewer's eye. The specific art style is:`
+
 export default {
+  anime: {
+    name: 'Tech Anime',
+    emoji: '👾',
+    systemInstruction: f(`
+      ${baseInstruction} a modern tech-anime style. The central focus is a charismatic anime-style character with clean, sharp lines, like vector art, typically positioned on the right side of the frame. The background is dark (deep blue, purple, or black) and features abstract digital patterns, circuits, or futuristic elements. The scene is illuminated by vibrant neon lights, primarily in shades of cyan and magenta, which also create strong rim lighting on the character. The text uses a bold, sans-serif font, often stacked, and is colored with the same vibrant neon palette to ensure it stands out dramatically.
+    `),
+    imageOutput: true,
+    presets: [
+      {
+        label: 'AI for Business',
+        prompt:
+          'An anime-style business professional in a suit, with a glowing brain icon next to them. Text: "AI FOR BUSINESS LEADERS"'
+      },
+      {
+        label: 'Cybersecurity Guide',
+        prompt:
+          'An anime-style hacker character in a hoodie, with lines of code in the background. Text: "BEST SECURITY PRACTICES"'
+      },
+      {
+        label: 'AI Content Tools',
+        prompt:
+          'A friendly anime character smiling, pointing towards the text. Text: "BEST AI CONTENT TOOLS"'
+      },
+      {
+        label: 'Coding Livestream',
+        prompt:
+          'An anime character with headphones coding on a futuristic computer. Neon lights reflect in their glasses. Text: "VIBECODING LIVE"'
+      }
+    ]
+  },
   cinematic: {
     name: 'Cinematic',
     emoji: '🎬',
-    syntax: 'image',
     systemInstruction: f(`
-      Generate a professional, high-quality YouTube thumbnail with a 16:9 aspect ratio.
-      The style should be cinematic, with dramatic lighting, high contrast, and a professional color grade.
-      The composition should be visually appealing and draw the viewer's attention to the main subject.
-      If text is included in the prompt, make it bold, clear, and easy to read.
-      The overall mood should be epic and engaging.
+      ${baseInstruction} hyper-realistic and cinematic. Emulate the look of a blockbuster film with dramatic, moody lighting and deep shadows. Apply professional color grading for a specific emotional tone (e.g., cool blues for sci-fi, warm tones for adventure). The composition should be dynamic, using rule of thirds, with a clear focal point. Text is integrated seamlessly into the scene.
     `),
     imageOutput: true,
     presets: [
       {
         label: 'Space Documentary',
         prompt:
-          'A stunning nebula with a futuristic spaceship flying through it. Text: "The Final Frontier"'
+          'A stunning photorealistic nebula with a futuristic spaceship flying through it. Text: "The Final Frontier"'
       },
       {
         label: 'Movie Review',
         prompt:
-          'A dramatic split-screen of two movie characters facing off. Text: "EPIC SHOWDOWN"'
+          'A dramatic split-screen of two photorealistic characters facing off. Text: "EPIC SHOWDOWN"'
       },
       {
         label: 'Travel Vlog',
         prompt:
-          'A lone hiker watching a majestic sunset over mountains. Text: "My Greatest Adventure"'
+          'A lone hiker watching a majestic, photorealistic sunset over mountains. Text: "My Greatest Adventure"'
       }
     ]
   },
   minimalist: {
     name: 'Minimalist',
     emoji: '✨',
-    syntax: 'image',
     systemInstruction: f(`
-      Generate a professional, clean YouTube thumbnail with a 16:9 aspect ratio.
-      The style should be minimalist, using a simple color palette, plenty of negative space, and clean typography.
-      Focus on a single, iconic visual element.
-      Text should be elegant, sans-serif, and well-spaced.
-      The overall aesthetic should be modern, stylish, and uncluttered.
+      ${baseInstruction} clean, modern, and minimalist. A single, bold subject against a simple, solid-colored or subtle gradient background. Emphasize negative space to create a sense of calm and focus. Typography is the hero: elegant, sans-serif, and perfectly kerned. The aesthetic is sophisticated and uncluttered.
     `),
     imageOutput: true,
     presets: [
@@ -73,13 +95,8 @@ export default {
   bold_typography: {
     name: 'Bold Typography',
     emoji: '📝',
-    syntax: 'image',
     systemInstruction: f(`
-      Generate a high-impact YouTube thumbnail with a 16:9 aspect ratio.
-      The main focus should be large, bold, and easily readable text that grabs attention.
-      Use a clean, modern, and impactful font.
-      The background should be simple, using solid colors, subtle gradients, or abstract shapes that complement the text without distracting from it.
-      The overall design must be professional, click-worthy, and text-centric.
+      ${baseInstruction} typography-focused. The text is the hero. Use a massive, bold, eye-catching font that fills most of the frame. The background is a simple but high-contrast texture, gradient, or solid color that makes the text pop. There is no imagery, only text and background elements. The design is high-contrast and impossible to ignore.
     `),
     imageOutput: true,
     presets: [
@@ -103,13 +120,8 @@ export default {
   vibrant: {
     name: 'Vibrant',
     emoji: '🌈',
-    syntax: 'image',
     systemInstruction: f(`
-      Generate a bright, eye-catching YouTube thumbnail with a 16:9 aspect ratio.
-      Use a vibrant and saturated color palette to make the thumbnail pop.
-      The imagery should be energetic and dynamic.
-      Text should be fun, readable, and possibly outlined to stand out against the colorful background.
-      The overall feel should be exciting, positive, and full of energy.
+      ${baseInstruction} energetic and vibrant. The image explodes with saturated, bright colors. The composition is dynamic with a sense of motion or excitement, using diagonal lines and overlapping elements. The imagery is fun and attention-grabbing. Text is playful, possibly with outlines or glow effects to stand out from the busy background.
     `),
     imageOutput: true,
     presets: [

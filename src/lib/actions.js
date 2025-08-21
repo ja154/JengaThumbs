@@ -20,9 +20,8 @@ export const init = () => {
   })
 }
 
-const newOutput = (model, mode, isBatch) => ({
+const newOutput = (model, mode, prompt) => ({
   model,
-  isBatch,
   id: crypto.randomUUID(),
   startTime: Date.now(),
   outputData: null,
@@ -31,7 +30,9 @@ const newOutput = (model, mode, isBatch) => ({
   outputMode: mode,
   rating: 0,
   isFavorite: false,
-  comments: ''
+  comments: '',
+  prompt,
+  isEditing: false
 })
 
 export const addRound = prompt => {
@@ -40,7 +41,7 @@ export const addRound = prompt => {
   const {outputMode, batchSize, batchModel} = get()
 
   const systemInstruction = modes[outputMode].systemInstruction
-  const fullPrompt = `${systemInstruction}\n\nPROMPT: "${prompt}"`
+  const fullPrompt = `${systemInstruction}\n\n${prompt}`
 
   const newRound = {
     prompt,
@@ -50,7 +51,7 @@ export const addRound = prompt => {
     outputMode,
     outputs: new Array(batchSize)
       .fill(null)
-      .map(() => newOutput(batchModel, outputMode, true))
+      .map(() => newOutput(batchModel, outputMode, prompt))
   }
 
   newRound.outputs.forEach(async (output, i) => {
@@ -99,6 +100,55 @@ export const addRound = prompt => {
   })
 }
 
+export const regenerateOutput = async (roundId, outputId, newPrompt) => {
+  const round = get().feed.find(r => r.id === roundId)
+  if (!round) return
+
+  const outputIndex = round.outputs.findIndex(o => o.id === outputId)
+  if (outputIndex === -1) return
+
+  const output = round.outputs[outputIndex]
+  const systemInstruction = round.systemInstruction
+  const fullPrompt = `${systemInstruction}\n\n${newPrompt}`
+
+  set(state => {
+    const round = state.feed.find(r => r.id === roundId)
+    const output = round.outputs.find(o => o.id === outputId)
+    output.isBusy = true
+    output.gotError = false
+    output.startTime = Date.now()
+    output.prompt = newPrompt
+  })
+
+  let res
+  try {
+    res = await llmGen({
+      model: models[output.model].modelString,
+      prompt: fullPrompt
+    })
+  } catch (e) {
+    console.error(e)
+    set(state => {
+      const round = state.feed.find(r => r.id === roundId)
+      const output = round.outputs.find(o => o.id === outputId)
+      output.isBusy = false
+      output.gotError = true
+      output.totalTime = Date.now() - output.startTime
+      output.isEditing = false
+    })
+    return
+  }
+
+  set(state => {
+    const round = state.feed.find(r => r.id === roundId)
+    const output = round.outputs.find(o => o.id === outputId)
+    output.outputData = res
+    output.isBusy = false
+    output.totalTime = Date.now() - output.startTime
+    output.isEditing = false
+  })
+}
+
 export const setOutputMode = mode =>
   set(state => {
     state.outputMode = mode
@@ -122,6 +172,30 @@ export const removeRound = id =>
 export const reset = () => {
   set(state => {
     state.feed = []
+  })
+}
+
+export const showFullscreen = url => {
+  set(state => {
+    state.fullscreenImageUrl = url
+  })
+}
+
+export const hideFullscreen = () => {
+  set(state => {
+    state.fullscreenImageUrl = null
+  })
+}
+
+export const setOutputEditing = (roundId, outputId, isEditing) => {
+  set(state => {
+    const round = state.feed.find(r => r.id === roundId)
+    if (round) {
+      const output = round.outputs.find(o => o.id === outputId)
+      if (output) {
+        output.isEditing = isEditing
+      }
+    }
   })
 }
 

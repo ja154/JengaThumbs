@@ -18,6 +18,7 @@ import {
 import {isTouch, isIframe} from '../lib/consts'
 import FeedItem from './FeedItem'
 import Intro from './Intro'
+import FullscreenViewer from './FullscreenViewer'
 
 export default function App() {
   const feed = useStore.use.feed()
@@ -290,6 +291,7 @@ export default function App() {
           <Intro />
         )}
       </main>
+      <FullscreenViewer />
     </div>
   )
 }

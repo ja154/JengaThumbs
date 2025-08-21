@@ -4,6 +4,7 @@
 */
 import {memo, useEffect, useRef, useState} from 'react'
 import {outputWidth} from '../lib/consts'
+import modes from '../lib/modes'
 
 function Renderer({mode, code}) {
   const iframeRef = useRef(null)
@@ -15,9 +16,11 @@ function Renderer({mode, code}) {
     }
   }, [iframeRef])
 
+  const isImage = modes[mode]?.imageOutput
+
   return (
     <div className={`renderer ${mode}Renderer`}>
-      {mode === 'image' ? (
+      {isImage ? (
         <img src={code} alt="Generated image" />
       ) : (
         <iframe

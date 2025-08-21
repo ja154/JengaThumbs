@@ -5,22 +5,39 @@
 import {useEffect, useState, memo} from 'react'
 import c from 'clsx'
 import models from '../lib/models'
+import modes from '../lib/modes'
+import {
+  showFullscreen,
+  setOutputEditing,
+  regenerateOutput
+} from '../lib/actions'
 import Renderer from './Renderer'
 
-function ModelOutput({
-  model,
-  outputData,
-  outputMode,
-  isBusy,
-  startTime,
-  totalTime,
-  gotError
-}) {
+function ModelOutput({roundId, output}) {
+  const {
+    id,
+    model,
+    outputData,
+    outputMode,
+    isBusy,
+    startTime,
+    totalTime,
+    gotError,
+    prompt,
+    isEditing
+  } = output
+
   const [time, setTime] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [editedPrompt, setEditedPrompt] = useState(prompt)
+  const isImageOutput = modes[outputMode]?.imageOutput
+
+  useEffect(() => {
+    setEditedPrompt(prompt)
+  }, [prompt])
 
   const copySource = () => {
-    if (outputMode === 'image') {
+    if (isImageOutput) {
       const byteString = atob(outputData.split(',')[1])
       const mimeString = outputData.split(',')[0].split(':')[1].split(';')[0]
       const ab = new ArrayBuffer(byteString.length)
@@ -54,26 +71,64 @@ function ModelOutput({
     return () => clearInterval(interval)
   }, [startTime, isBusy])
 
+  const handleRegenerate = () => {
+    regenerateOutput(roundId, id, editedPrompt)
+  }
+
+  const handleCancel = () => {
+    setEditedPrompt(prompt)
+    setOutputEditing(roundId, id, false)
+  }
+
+  const editorUi = (
+    <div className="editorUi">
+      <textarea
+        value={editedPrompt}
+        onChange={e => setEditedPrompt(e.target.value)}
+        rows={5}
+      />
+      <div className="actions">
+        <button className="button minor" onClick={handleCancel}>
+          Cancel
+        </button>
+        <button className="button primary" onClick={handleRegenerate}>
+          <span className="icon">auto_awesome</span> Regenerate
+        </button>
+      </div>
+    </div>
+  )
+
+  const rendererUi = (
+    <>
+      {gotError && (
+        <div className="error">
+          <p>
+            <span className="icon">error</span>
+          </p>
+          <p>Response error</p>
+        </div>
+      )}
+
+      {isBusy && (
+        <div className="loader">
+          <span className="icon">hourglass</span>
+        </div>
+      )}
+
+      {outputData && <Renderer mode={outputMode} code={outputData} />}
+    </>
+  )
+
   return (
     <div className="modelOutput">
       <div className="outputRendering">
-        <div className="front">
-          {gotError && (
-            <div className="error">
-              <p>
-                <span className="icon">error</span>
-              </p>
-              <p>Response error</p>
-            </div>
-          )}
-
-          {isBusy && (
-            <div className="loader">
-              <span className="icon">hourglass</span>
-            </div>
-          )}
-
-          {outputData && <Renderer mode={outputMode} code={outputData} />}
+        <div
+          className={c('front', {'renderer-clickable': !isEditing})}
+          onClick={() =>
+            !isEditing && outputData && showFullscreen(outputData)
+          }
+        >
+          {isEditing ? editorUi : rendererUi}
         </div>
       </div>
 
@@ -90,10 +145,24 @@ function ModelOutput({
         </div>
 
         <div className={c('outputActions', {active: outputData})}>
+          {isImageOutput && (
+            <a
+              className="iconButton"
+              href={outputData}
+              download={`thumbnail-${Date.now()}.png`}
+            >
+              <span className="icon">download</span>
+              <span className="tooltip">Download image</span>
+            </a>
+          )}
+          <button className="iconButton" onClick={() => setOutputEditing(roundId, id, true)}>
+            <span className="icon">edit</span>
+            <span className="tooltip">Edit and regenerate</span>
+          </button>
           <button className="iconButton" onClick={copySource}>
             <span className="icon">content_copy</span>
             <span className="tooltip">
-              {copied ? 'Copied!' : 'Copy image'}
+              {copied ? 'Copied!' : isImageOutput ? 'Copy image' : 'Copy code'}
             </span>
           </button>
         </div>

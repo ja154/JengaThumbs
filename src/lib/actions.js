@@ -5,6 +5,7 @@
 import useStore from './store'
 import modes from './modes'
 import llmGen from './llm'
+import llmCaptionGen from './llm_caption'
 import models from './models'
 
 const get = useStore.getState
@@ -32,7 +33,10 @@ const newOutput = (model, mode, prompt) => ({
   isFavorite: false,
   comments: '',
   prompt,
-  isEditing: false
+  isEditing: false,
+  caption: null,
+  isGeneratingCaption: true,
+  captionError: false
 })
 
 export const addRound = prompt => {
@@ -54,60 +58,73 @@ export const addRound = prompt => {
       .map(() => newOutput(batchModel, outputMode, prompt))
   }
 
-  newRound.outputs.forEach(async (output, i) => {
-    let res
-
-    try {
-      res = await llmGen({
-        model: models[output.model].modelString,
-        prompt: fullPrompt
-      })
-    } catch (e) {
-      console.error(e)
-      set(state => {
-        const round = state.feed.find(round => round.id === newRound.id)
-        if (!round) {
-          return
-        }
-        round.outputs[i] = {
-          ...output,
-          isBusy: false,
-          gotError: true,
-          totalTime: Date.now() - output.startTime
-        }
-      })
-      return
-    }
-
-    set(state => {
-      const round = state.feed.find(round => round.id === newRound.id)
-
-      if (!round) {
-        return
-      }
-
-      round.outputs[i] = {
-        ...output,
-        outputData: res,
-        isBusy: false,
-        totalTime: Date.now() - output.startTime
-      }
-    })
-  })
-
   set(state => {
     state.feed.unshift(newRound)
   })
+
+  newRound.outputs.forEach((output, i) => {
+    // Generate image
+    llmGen({
+      model: models[output.model].modelString,
+      prompt: fullPrompt
+    })
+      .then(res => {
+        set(state => {
+          const round = state.feed.find(round => round.id === newRound.id)
+          if (!round) return
+          const targetOutput = round.outputs[i]
+          if (!targetOutput) return
+          targetOutput.outputData = res
+          targetOutput.isBusy = false
+          targetOutput.totalTime = Date.now() - output.startTime
+        })
+      })
+      .catch(e => {
+        console.error(e)
+        set(state => {
+          const round = state.feed.find(round => round.id === newRound.id)
+          if (!round) return
+          const targetOutput = round.outputs[i]
+          if (!targetOutput) return
+          targetOutput.isBusy = false
+          targetOutput.gotError = true
+          targetOutput.totalTime = Date.now() - output.startTime
+        })
+      })
+
+    // Generate caption
+    llmCaptionGen({prompt})
+      .then(caption => {
+        set(state => {
+          const round = state.feed.find(round => round.id === newRound.id)
+          if (!round) return
+          const targetOutput = round.outputs[i]
+          if (!targetOutput) return
+          targetOutput.caption = caption
+          targetOutput.isGeneratingCaption = false
+        })
+      })
+      .catch(e => {
+        console.error(e)
+        set(state => {
+          const round = state.feed.find(round => round.id === newRound.id)
+          if (!round) return
+          const targetOutput = round.outputs[i]
+          if (!targetOutput) return
+          targetOutput.isGeneratingCaption = false
+          targetOutput.captionError = true
+        })
+      })
+  })
 }
 
-export const regenerateOutput = async (roundId, outputId, newPrompt) => {
+export const regenerateOutput = (roundId, outputId, newPrompt) => {
   const round = get().feed.find(r => r.id === roundId)
   if (!round) return
 
-  const outputIndex = round.outputs.findIndex(o => o.id === outputId)
-  if (outputIndex === -1) return
+  const output = round.outputs.find(o => o.id === outputId)
+  if (!output) return
 
-  const output = round.outputs[outputIndex]
   const systemInstruction = round.systemInstruction
   const fullPrompt = `${systemInstruction}\n\n${newPrompt}`
 
@@ -118,35 +135,61 @@ export const regenerateOutput = async (roundId, outputId, newPrompt) => {
     output.gotError = false
     output.startTime = Date.now()
     output.prompt = newPrompt
+    output.isGeneratingCaption = true
+    output.caption = null
+    output.captionError = false
   })
 
-  let res
-  try {
-    res = await llmGen({
-      model: models[output.model].modelString,
-      prompt: fullPrompt
-    })
-  } catch (e) {
-    console.error(e)
-    set(state => {
-      const round = state.feed.find(r => r.id === roundId)
-      const output = round.outputs.find(o => o.id === outputId)
-      output.isBusy = false
-      output.gotError = true
-      output.totalTime = Date.now() - output.startTime
-      output.isEditing = false
-    })
-    return
-  }
-
-  set(state => {
-    const round = state.feed.find(r => r.id === roundId)
-    const output = round.outputs.find(o => o.id === outputId)
-    output.outputData = res
-    output.isBusy = false
-    output.totalTime = Date.now() - output.startTime
-    output.isEditing = false
+  // Generate image
+  llmGen({
+    model: models[output.model].modelString,
+    prompt: fullPrompt
   })
+    .then(res => {
+      set(state => {
+        const round = state.feed.find(r => r.id === roundId)
+        const output = round.outputs.find(o => o.id === outputId)
+        if (!output) return
+        output.outputData = res
+        output.isBusy = false
+        output.totalTime = Date.now() - output.startTime
+        output.isEditing = false
+      })
+    })
+    .catch(e => {
+      console.error(e)
+      set(state => {
+        const round = state.feed.find(r => r.id === roundId)
+        const output = round.outputs.find(o => o.id === outputId)
+        if (!output) return
+        output.isBusy = false
+        output.gotError = true
+        output.totalTime = Date.now() - output.startTime
+        output.isEditing = false
+      })
+    })
+
+  // Generate caption
+  llmCaptionGen({prompt: newPrompt})
+    .then(caption => {
+      set(state => {
+        const round = state.feed.find(r => r.id === roundId)
+        const output = round.outputs.find(o => o.id === outputId)
+        if (!output) return
+        output.caption = caption
+        output.isGeneratingCaption = false
+      })
+    })
+    .catch(e => {
+      console.error(e)
+      set(state => {
+        const round = state.feed.find(r => r.id === roundId)
+        const output = round.outputs.find(o => o.id === outputId)
+        if (!output) return
+        output.isGeneratingCaption = false
+        output.captionError = true
+      })
+    })
 }
 
 export const setOutputMode = mode =>

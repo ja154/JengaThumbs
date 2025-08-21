@@ -9,7 +9,7 @@ const f = s =>
     .replaceAll(/\n{3,}/g, '\n\n')
     .trim()
 
-const baseInstruction = `You are an expert graphic designer creating a 16:9 YouTube thumbnail. The final image must be professional, high-resolution, and visually compelling. Key requirements are: 1) A clear, engaging subject. 2) Large, bold, and easily readable text that is a core part of the design. 3) A dynamic composition that draws the viewer's eye. The specific art style is:`
+const baseInstruction = `You are an expert graphic designer creating a 16:9 YouTube thumbnail. The final image must be professional, high-resolution, and visually compelling. Key requirements are: 1) A clear, engaging subject. 2) Large, bold, and easily readable text that is a core part of the design. Crucially, all text must be perfectly spelled and clearly legible, with no merged or overlapping characters. 3) A dynamic composition that draws the viewer's eye. The specific art style is:`
 
 export default {
   anime: {

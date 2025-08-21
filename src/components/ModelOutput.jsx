@@ -24,11 +24,15 @@ function ModelOutput({roundId, output}) {
     totalTime,
     gotError,
     prompt,
-    isEditing
+    isEditing,
+    caption,
+    isGeneratingCaption,
+    captionError
   } = output
 
   const [time, setTime] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [captionCopied, setCaptionCopied] = useState(false)
   const [editedPrompt, setEditedPrompt] = useState(prompt)
   const isImageOutput = modes[outputMode]?.imageOutput
 
@@ -56,6 +60,14 @@ function ModelOutput({roundId, output}) {
       navigator.clipboard.writeText(outputData.trim())
       setCopied(true)
       setTimeout(() => setCopied(false), 1000)
+    }
+  }
+
+  const copyCaption = () => {
+    if (caption) {
+      navigator.clipboard.writeText(caption.trim())
+      setCaptionCopied(true)
+      setTimeout(() => setCaptionCopied(false), 2000)
     }
   }
 
@@ -155,7 +167,10 @@ function ModelOutput({roundId, output}) {
               <span className="tooltip">Download image</span>
             </a>
           )}
-          <button className="iconButton" onClick={() => setOutputEditing(roundId, id, true)}>
+          <button
+            className="iconButton"
+            onClick={() => setOutputEditing(roundId, id, true)}
+          >
             <span className="icon">edit</span>
             <span className="tooltip">Edit and regenerate</span>
           </button>
@@ -167,6 +182,29 @@ function ModelOutput({roundId, output}) {
           </button>
         </div>
       </div>
+
+      {(caption || isGeneratingCaption || captionError) && (
+        <div className="captionContainer">
+          <div className="captionHeader">
+            <h4>✍️ Suggested Caption</h4>
+            {caption && (
+              <button className="iconButton" onClick={copyCaption}>
+                <span className="icon">content_copy</span>
+                <span className="tooltip right">
+                  {captionCopied ? 'Copied!' : 'Copy caption'}
+                </span>
+              </button>
+            )}
+          </div>
+          {isGeneratingCaption ? (
+            <p className="captionStatus">Generating caption...</p>
+          ) : captionError ? (
+            <p className="captionStatus error">Could not generate caption.</p>
+          ) : (
+            <p className="captionText">{caption}</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

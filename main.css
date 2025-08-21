@@ -836,3 +836,34 @@ summary {
     transform: translateY(-2px);
   }
 }
+.captionContainer {
+  margin-top: 15px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--border-primary);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.captionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.captionHeader h4 {
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+.captionText {
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--text-primary);
+}
+.captionStatus {
+  color: var(--text-tertiary);
+}
+.captionStatus.error {
+  color: var(--error);
+}

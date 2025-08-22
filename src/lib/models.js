@@ -7,5 +7,10 @@ export default {
     name: 'Imagen 3.0',
     version: '3.0',
     modelString: 'imagen-3.0-generate-002'
+  },
+  imagen_4: {
+    name: 'Imagen 4.0',
+    version: '4.0',
+    modelString: 'imagen-3.0-generate-002'
   }
 }

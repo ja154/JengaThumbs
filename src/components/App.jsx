@@ -81,10 +81,7 @@ export default function App() {
       <header>
         <div>
           <h1>
-            <p>
-              AI Thumbnail<span>🖼️</span>
-            </p>
-            <p>Maker</p>
+            AI Thumbnail Maker <span>🖼️</span>
           </h1>
         </div>
 

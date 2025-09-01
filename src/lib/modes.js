@@ -12,6 +12,36 @@ const f = s =>
 const baseInstruction = `You are an expert graphic designer creating a 16:9 YouTube thumbnail. The final image must be professional, high-resolution, and visually compelling. Key requirements are: 1) A clear, engaging subject. 2) Large, bold, and easily readable text that is a core part of the design. Crucially, all text must be perfectly spelled and clearly legible, with no merged or overlapping characters. 3) A dynamic composition that draws the viewer's eye. The specific art style is:`
 
 export default {
+  default: {
+    name: 'Default',
+    emoji: '👍',
+    systemInstruction: f(`
+      ${baseInstruction} a modern, high-impact style typical for popular YouTube creators. It must feature a clear, high-quality photo of a person with an expressive face, often looking towards the camera. The background should be clean, perhaps with a subtle gradient or texture, to ensure the subject pops. Text is crucial: it must be BIG, BOLD, and have extremely high contrast against the background. Use techniques like thick outlines or drop shadows to make the text readable at any size. The composition should be dynamic and draw the viewer's attention immediately.
+    `),
+    imageOutput: true,
+    presets: [
+      {
+        label: 'Gaming Win',
+        prompt:
+          'A photo of a gamer with a shocked and excited expression, controller in hand. Text: "I CAN\'T BELIEVE I WON!"'
+      },
+      {
+        label: 'Product Review',
+        prompt:
+          'A photo of a person holding a new gadget and pointing at it with a smile. Text: "IS IT WORTH IT?"'
+      },
+      {
+        label: 'Tutorial Video',
+        prompt:
+          'A photo of a friendly person pointing to the side at the text. Text: "HOW TO DO THE THING"'
+      },
+      {
+        label: 'Crazy Story',
+        prompt:
+          'A photo of a person with a wide-eyed, surprised look, hand on their cheek. Text: "YOU WON\'T BELIEVE THIS"'
+      }
+    ]
+  },
   anime: {
     name: 'Tech Anime',
     emoji: '👾',

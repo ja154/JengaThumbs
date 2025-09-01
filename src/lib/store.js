@@ -8,6 +8,7 @@ import {immer} from 'zustand/middleware/immer'
 import {createSelectorFunctions} from 'auto-zustand-selectors-hook'
 import modes from './modes'
 import models from './models'
+import layouts from './layouts'
 
 export default createSelectorFunctions(
   create(
@@ -15,6 +16,7 @@ export default createSelectorFunctions(
       didInit: false,
       feed: [],
       outputMode: Object.keys(modes)[0],
+      layout: 'no-preference',
       batchMode: true,
       batchSize: 3,
       batchModel: Object.keys(models)[0],

@@ -4,6 +4,7 @@
 */
 import useStore from './store'
 import modes from './modes'
+import layouts from './layouts'
 import llmGen from './llm'
 import llmCaptionGen from './llm_caption'
 import models from './models'
@@ -42,10 +43,13 @@ const newOutput = (model, mode, prompt) => ({
 export const addRound = prompt => {
   scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
-  const {outputMode, batchSize, batchModel} = get()
+  const {outputMode, batchSize, batchModel, layout} = get()
 
   const systemInstruction = modes[outputMode].systemInstruction
-  const fullPrompt = `${systemInstruction}\n\n${prompt}`
+  const layoutInstruction = layouts[layout].instruction
+  const fullPrompt = `${systemInstruction}\n\n${
+    layoutInstruction ? `Layout instruction: ${layoutInstruction}\n\n` : ''
+  }${prompt}`
 
   const newRound = {
     prompt,
@@ -53,6 +57,7 @@ export const addRound = prompt => {
     id: crypto.randomUUID(),
     createdAt: new Date(),
     outputMode,
+    layout,
     outputs: new Array(batchSize)
       .fill(null)
       .map(() => newOutput(batchModel, outputMode, prompt))
@@ -126,7 +131,11 @@ export const regenerateOutput = (roundId, outputId, newPrompt) => {
   if (!output) return
 
   const systemInstruction = round.systemInstruction
-  const fullPrompt = `${systemInstruction}\n\n${newPrompt}`
+  const layoutInstruction =
+    round.layout && layouts[round.layout] ? layouts[round.layout].instruction : ''
+  const fullPrompt = `${systemInstruction}\n\n${
+    layoutInstruction ? `Layout instruction: ${layoutInstruction}\n\n` : ''
+  }${newPrompt}`
 
   set(state => {
     const round = state.feed.find(r => r.id === roundId)
@@ -195,6 +204,11 @@ export const regenerateOutput = (roundId, outputId, newPrompt) => {
 export const setOutputMode = mode =>
   set(state => {
     state.outputMode = mode
+  })
+
+export const setLayout = layout =>
+  set(state => {
+    state.layout = layout
   })
 
 export const setBatchModel = model =>

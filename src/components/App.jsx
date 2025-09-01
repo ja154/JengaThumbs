@@ -7,13 +7,15 @@ import shuffle from 'lodash.shuffle'
 import c from 'clsx'
 import modes from '../lib/modes'
 import models from '../lib/models'
+import layouts from '../lib/layouts'
 import useStore from '../lib/store'
 import {
   addRound,
   setOutputMode,
   setBatchSize,
   setBatchModel,
-  reset
+  reset,
+  setLayout
 } from '../lib/actions'
 import {isTouch, isIframe} from '../lib/consts'
 import FeedItem from './FeedItem'
@@ -25,11 +27,13 @@ export default function App() {
   const outputMode = useStore.use.outputMode()
   const batchModel = useStore.use.batchModel()
   const batchSize = useStore.use.batchSize()
+  const layout = useStore.use.layout()
 
   const [presets, setPresets] = useState([])
   const [showPresets, setShowPresets] = useState(false)
   const [showStyles, setShowStyles] = useState(false)
   const [showModels, setShowModels] = useState(false)
+  const [showLayouts, setShowLayouts] = useState(false)
   const [isDark, setIsDark] = useState(true)
 
   const inputRef = useRef(null)
@@ -66,6 +70,7 @@ export default function App() {
         setShowStyles(false)
         setShowPresets(false)
         setShowModels(false)
+        setShowLayouts(false)
       })
     }
   }, [])
@@ -96,6 +101,7 @@ export default function App() {
                   setShowStyles(s => !s)
                   setShowPresets(false)
                   setShowModels(false)
+                  setShowLayouts(false)
                 }
               : null
           }
@@ -125,6 +131,45 @@ export default function App() {
 
         <div
           className="selectorWrapper"
+          onMouseEnter={!isTouch && (() => setShowLayouts(true))}
+          onMouseLeave={!isTouch && (() => setShowLayouts(false))}
+          onTouchStart={
+            isTouch
+              ? e => {
+                  e.stopPropagation()
+                  setShowLayouts(s => !s)
+                  setShowStyles(false)
+                  setShowPresets(false)
+                  setShowModels(false)
+                }
+              : null
+          }
+        >
+          <p>
+            {layouts[layout].emoji} {layouts[layout].name}
+          </p>
+          <div className={c('selector', {active: showLayouts})}>
+            <ul>
+              {Object.keys(layouts).map(key => (
+                <li key={key}>
+                  <button
+                    className={c('chip', {primary: key === layout})}
+                    onClick={() => {
+                      setLayout(key)
+                      setShowLayouts(false)
+                    }}
+                  >
+                    {layouts[key].emoji} {layouts[key].name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="label">Layout</div>
+        </div>
+
+        <div
+          className="selectorWrapper"
           onMouseEnter={!isTouch && (() => setShowModels(true))}
           onMouseLeave={!isTouch && (() => setShowModels(false))}
           onTouchStart={
@@ -134,6 +179,7 @@ export default function App() {
                   setShowModels(s => !s)
                   setShowStyles(false)
                   setShowPresets(false)
+                  setShowLayouts(false)
                 }
               : null
           }
@@ -170,6 +216,7 @@ export default function App() {
                   setShowPresets(s => !s)
                   setShowStyles(false)
                   setShowModels(false)
+                  setShowLayouts(false)
                 }
               : null
           }

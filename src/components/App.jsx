@@ -238,7 +238,7 @@ export default function App() {
               <input
                 type="range"
                 min={1}
-                max={4}
+                max={6}
                 value={batchSize}
                 onChange={e => setBatchSize(e.target.valueAsNumber)}
               />{' '}

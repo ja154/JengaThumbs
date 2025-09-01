@@ -161,7 +161,7 @@ function ModelOutput({roundId, output}) {
             <a
               className="iconButton"
               href={outputData}
-              download={`thumbnail-${Date.now()}.png`}
+              download={`thumbnail-${Date.now()}.jpeg`}
             >
               <span className="icon">download</span>
               <span className="tooltip">Download image</span>

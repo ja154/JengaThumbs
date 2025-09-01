@@ -18,13 +18,13 @@ export default limitFunction(
           prompt,
           config: {
             numberOfImages: 1,
-            outputMimeType: 'image/png',
+            outputMimeType: 'image/jpeg',
             aspectRatio: '16:9'
           }
         })
 
         const base64ImageBytes = response.generatedImages[0].image.imageBytes
-        return `data:image/png;base64,${base64ImageBytes}`
+        return `data:image/jpeg;base64,${base64ImageBytes}`
       } catch (error) {
         console.error(
           `Attempt ${attempt + 1} failed for model ${model}:`,

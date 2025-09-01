@@ -16,6 +16,12 @@ export default function FeedItem({round, onModifyPrompt}) {
     <li key={round.id}>
       <div className={c('header', {anchorTop: showSystemInstruction})}>
         <h3 className={c({anchorTop: showSystemInstruction})}>
+          {round.uploadedImage && (
+            <div className="sourceImage">
+              <img src={round.uploadedImage} alt="Source" />
+              <div className="tooltip right">Source Image</div>
+            </div>
+          )}
           <div className="chip">
             {modes[round.outputMode].emoji} {modes[round.outputMode].name}
           </div>

@@ -21,7 +21,9 @@ export default createSelectorFunctions(
       batchSize: 3,
       batchModel: Object.keys(models)[0],
       versusModels: {},
-      fullscreenImageUrl: null
+      fullscreenImageUrl: null,
+      uploadedImage: null,
+      previousBatchModel: null
     }))
   )
 )

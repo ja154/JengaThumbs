@@ -12,16 +12,6 @@ import models from './models'
 const get = useStore.getState
 const set = useStore.setState
 
-export const init = () => {
-  if (get().didInit) {
-    return
-  }
-
-  set(state => {
-    state.didInit = true
-  })
-}
-
 const newOutput = (model, mode, prompt) => ({
   model,
   id: crypto.randomUUID(),
@@ -43,9 +33,16 @@ const newOutput = (model, mode, prompt) => ({
 export const addRound = prompt => {
   scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
-  const {outputMode, batchSize, batchModel, layout} = get()
+  const {outputMode, batchSize, batchModel, layout, uploadedImage} = get()
 
-  const systemInstruction = modes[outputMode].systemInstruction
+  let systemInstruction = modes[outputMode].systemInstruction
+  if (uploadedImage) {
+    systemInstruction = systemInstruction.replace(
+      'creating a 16:9 YouTube thumbnail',
+      'editing the provided image to turn it into a 16:9 YouTube thumbnail'
+    )
+  }
+
   const layoutInstruction = layouts[layout].instruction
   const fullPrompt = `${systemInstruction}\n\n${
     layoutInstruction ? `Layout instruction: ${layoutInstruction}\n\n` : ''
@@ -58,6 +55,7 @@ export const addRound = prompt => {
     createdAt: new Date(),
     outputMode,
     layout,
+    uploadedImage,
     outputs: new Array(batchSize)
       .fill(null)
       .map(() => newOutput(batchModel, outputMode, prompt))
@@ -71,7 +69,8 @@ export const addRound = prompt => {
     // Generate image
     llmGen({
       model: models[output.model].modelString,
-      prompt: fullPrompt
+      prompt: fullPrompt,
+      image: uploadedImage
     })
       .then(res => {
         set(state => {
@@ -130,7 +129,16 @@ export const regenerateOutput = (roundId, outputId, newPrompt) => {
   const output = round.outputs.find(o => o.id === outputId)
   if (!output) return
 
-  const systemInstruction = round.systemInstruction
+  const {uploadedImage} = round
+
+  let systemInstruction = round.systemInstruction
+  if (uploadedImage) {
+    systemInstruction = systemInstruction.replace(
+      'creating a 16:9 YouTube thumbnail',
+      'editing the provided image to turn it into a 16:9 YouTube thumbnail'
+    )
+  }
+
   const layoutInstruction =
     round.layout && layouts[round.layout] ? layouts[round.layout].instruction : ''
   const fullPrompt = `${systemInstruction}\n\n${
@@ -152,7 +160,8 @@ export const regenerateOutput = (roundId, outputId, newPrompt) => {
   // Generate image
   llmGen({
     model: models[output.model].modelString,
-    prompt: fullPrompt
+    prompt: fullPrompt,
+    image: uploadedImage
   })
     .then(res => {
       set(state => {
@@ -256,4 +265,31 @@ export const setOutputEditing = (roundId, outputId, isEditing) => {
   })
 }
 
-init()
+export const setUploadedImage = imageData => {
+  const {batchModel} = get()
+  const imageEditingModelKey = Object.keys(models).find(
+    key => models[key].type === 'image-editing'
+  )
+
+  if (imageData) {
+    if (models[batchModel].type !== 'image-editing') {
+      set(state => {
+        state.uploadedImage = imageData
+        state.previousBatchModel = state.batchModel
+        state.batchModel = imageEditingModelKey
+      })
+    } else {
+      set(state => {
+        state.uploadedImage = imageData
+      })
+    }
+  } else {
+    set(state => {
+      state.uploadedImage = null
+      if (state.previousBatchModel) {
+        state.batchModel = state.previousBatchModel
+        state.previousBatchModel = null
+      }
+    })
+  }
+}

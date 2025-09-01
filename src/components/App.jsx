@@ -15,12 +15,14 @@ import {
   setBatchSize,
   setBatchModel,
   reset,
-  setLayout
+  setLayout,
+  setUploadedImage
 } from '../lib/actions'
 import {isTouch, isIframe} from '../lib/consts'
 import FeedItem from './FeedItem'
 import Intro from './Intro'
 import FullscreenViewer from './FullscreenViewer'
+import ImageUploader from './ImageUploader'
 
 export default function App() {
   const feed = useStore.use.feed()
@@ -28,6 +30,7 @@ export default function App() {
   const batchModel = useStore.use.batchModel()
   const batchSize = useStore.use.batchSize()
   const layout = useStore.use.layout()
+  const uploadedImage = useStore.use.uploadedImage()
 
   const [presets, setPresets] = useState([])
   const [showPresets, setShowPresets] = useState(false)
@@ -169,7 +172,7 @@ export default function App() {
         </div>
 
         <div
-          className="selectorWrapper"
+          className={c('selectorWrapper', {disabled: uploadedImage})}
           onMouseEnter={!isTouch && (() => setShowModels(true))}
           onMouseLeave={!isTouch && (() => setShowModels(false))}
           onTouchStart={
@@ -205,6 +208,11 @@ export default function App() {
           <div className="label">Model</div>
         </div>
 
+        <div>
+          <ImageUploader />
+          <div className="label">Source Image</div>
+        </div>
+
         <div
           className="selectorWrapper prompt"
           onMouseEnter={!isTouch && (() => setShowPresets(true))}
@@ -223,7 +231,11 @@ export default function App() {
         >
           <input
             className="promptInput"
-            placeholder="Describe your thumbnail"
+            placeholder={
+              uploadedImage
+                ? 'Describe edits for your image...'
+                : 'Describe your thumbnail...'
+            }
             onFocus={!isTouch && (() => setShowPresets(false))}
             ref={inputRef}
             onKeyDown={e => {
@@ -301,6 +313,7 @@ export default function App() {
             onClick={() => {
               reset()
               inputRef.current.value = ''
+              setUploadedImage(null)
             }}
           >
             <span className="icon">replay</span>

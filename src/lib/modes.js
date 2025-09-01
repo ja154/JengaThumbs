@@ -46,24 +46,29 @@ export default {
     name: 'Cinematic',
     emoji: '🎬',
     systemInstruction: f(`
-      ${baseInstruction} hyper-realistic and cinematic. Emulate the look of a blockbuster film with dramatic, moody lighting and deep shadows. Apply professional color grading for a specific emotional tone (e.g., cool blues for sci-fi, warm tones for adventure). The composition should be dynamic, using rule of thirds, with a clear focal point. Text is integrated seamlessly into the scene.
+      ${baseInstruction} a modern "creator" or "influencer" style. It features a high-quality, expressive photo of a person, often looking at the camera. The background is clean and simple, sometimes with a subtle texture or gradient, to make the subject stand out. Lighting is professional and flattering. The text is very large, bold, and has high contrast with the background, often using outlines or drop shadows for maximum readability. The overall feel is polished, professional, and engaging.
     `),
     imageOutput: true,
     presets: [
       {
-        label: 'Space Documentary',
+        label: 'Tech Unboxing',
         prompt:
-          'A stunning photorealistic nebula with a futuristic spaceship flying through it. Text: "The Final Frontier"'
+          'A photo of an excited man holding a new smartphone box. Text: "I FINALLY GOT IT!"'
       },
       {
-        label: 'Movie Review',
+        label: 'React Tutorial',
         prompt:
-          'A dramatic split-screen of two photorealistic characters facing off. Text: "EPIC SHOWDOWN"'
+          'A photo of a female software developer smiling and pointing to a logo of the React javascript framework. Text: "REACT IN 10 MINUTES"'
       },
       {
-        label: 'Travel Vlog',
+        label: 'Finance Tips',
         prompt:
-          'A lone hiker watching a majestic, photorealistic sunset over mountains. Text: "My Greatest Adventure"'
+          'A photo of a person looking thoughtfully at the camera with graphics of rising stock charts in the background. Text: "My Top 5 Investments"'
+      },
+      {
+        label: 'AI News',
+        prompt:
+          'A photo of a man pointing towards the text with a surprised expression. A simple background with an AI logo. Text: "AI IS CHANGING EVERYTHING"'
       }
     ]
   },

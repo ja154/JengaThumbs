@@ -93,121 +93,6 @@ export default function App() {
           </h1>
         </div>
 
-        <div
-          className="selectorWrapper"
-          onMouseEnter={!isTouch && (() => setShowStyles(true))}
-          onMouseLeave={!isTouch && (() => setShowStyles(false))}
-          onTouchStart={
-            isTouch
-              ? e => {
-                  e.stopPropagation()
-                  setShowStyles(s => !s)
-                  setShowPresets(false)
-                  setShowModels(false)
-                  setShowLayouts(false)
-                }
-              : null
-          }
-        >
-          <p>
-            {modes[outputMode].emoji} {modes[outputMode].name}
-          </p>
-          <div className={c('selector', {active: showStyles})}>
-            <ul>
-              {Object.keys(modes).map(key => (
-                <li key={key}>
-                  <button
-                    className={c('chip', {primary: key === outputMode})}
-                    onClick={() => {
-                      setOutputMode(key)
-                      setShowStyles(false)
-                    }}
-                  >
-                    {modes[key].emoji} {modes[key].name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="label">Style</div>
-        </div>
-
-        <div
-          className="selectorWrapper"
-          onMouseEnter={!isTouch && (() => setShowLayouts(true))}
-          onMouseLeave={!isTouch && (() => setShowLayouts(false))}
-          onTouchStart={
-            isTouch
-              ? e => {
-                  e.stopPropagation()
-                  setShowLayouts(s => !s)
-                  setShowStyles(false)
-                  setShowPresets(false)
-                  setShowModels(false)
-                }
-              : null
-          }
-        >
-          <p>
-            {layouts[layout].emoji} {layouts[layout].name}
-          </p>
-          <div className={c('selector', {active: showLayouts})}>
-            <ul>
-              {Object.keys(layouts).map(key => (
-                <li key={key}>
-                  <button
-                    className={c('chip', {primary: key === layout})}
-                    onClick={() => {
-                      setLayout(key)
-                      setShowLayouts(false)
-                    }}
-                  >
-                    {layouts[key].emoji} {layouts[key].name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="label">Layout</div>
-        </div>
-
-        <div
-          className={c('selectorWrapper', {disabled: uploadedImage})}
-          onMouseEnter={!isTouch && (() => setShowModels(true))}
-          onMouseLeave={!isTouch && (() => setShowModels(false))}
-          onTouchStart={
-            isTouch
-              ? e => {
-                  e.stopPropagation()
-                  setShowModels(s => !s)
-                  setShowStyles(false)
-                  setShowPresets(false)
-                  setShowLayouts(false)
-                }
-              : null
-          }
-        >
-          <p>{models[batchModel].name}</p>
-          <div className={c('selector', {active: showModels})}>
-            <ul>
-              {Object.keys(models).map(key => (
-                <li key={key}>
-                  <button
-                    className={c('chip', {primary: key === batchModel})}
-                    onClick={() => {
-                      setBatchModel(key)
-                      setShowModels(false)
-                    }}
-                  >
-                    {models[key].name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="label">Model</div>
-        </div>
-
         <div>
           <button
             className="circleButton resetButton"
@@ -317,14 +202,121 @@ export default function App() {
             <div className="label">Prompt</div>
           </div>
 
-          <div>
-            <button
-              className="button primary generate-button"
-              onClick={handleGenerate}
-            >
-              <span className="icon">auto_awesome</span> Generate
-            </button>
-            <div className="label">&nbsp;</div>
+          <div className="flex-break"></div>
+
+          <div
+            className="selectorWrapper"
+            onMouseEnter={!isTouch && (() => setShowStyles(true))}
+            onMouseLeave={!isTouch && (() => setShowStyles(false))}
+            onTouchStart={
+              isTouch
+                ? e => {
+                    e.stopPropagation()
+                    setShowStyles(s => !s)
+                    setShowPresets(false)
+                    setShowModels(false)
+                    setShowLayouts(false)
+                  }
+                : null
+            }
+          >
+            <p>
+              {modes[outputMode].emoji} {modes[outputMode].name}
+            </p>
+            <div className={c('selector', {active: showStyles})}>
+              <ul>
+                {Object.keys(modes).map(key => (
+                  <li key={key}>
+                    <button
+                      className={c('chip', {primary: key === outputMode})}
+                      onClick={() => {
+                        setOutputMode(key)
+                        setShowStyles(false)
+                      }}
+                    >
+                      {modes[key].emoji} {modes[key].name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="label">Style</div>
+          </div>
+
+          <div
+            className="selectorWrapper"
+            onMouseEnter={!isTouch && (() => setShowLayouts(true))}
+            onMouseLeave={!isTouch && (() => setShowLayouts(false))}
+            onTouchStart={
+              isTouch
+                ? e => {
+                    e.stopPropagation()
+                    setShowLayouts(s => !s)
+                    setShowStyles(false)
+                    setShowPresets(false)
+                    setShowModels(false)
+                  }
+                : null
+            }
+          >
+            <p>
+              {layouts[layout].emoji} {layouts[layout].name}
+            </p>
+            <div className={c('selector', {active: showLayouts})}>
+              <ul>
+                {Object.keys(layouts).map(key => (
+                  <li key={key}>
+                    <button
+                      className={c('chip', {primary: key === layout})}
+                      onClick={() => {
+                        setLayout(key)
+                        setShowLayouts(false)
+                      }}
+                    >
+                      {layouts[key].emoji} {layouts[key].name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="label">Layout</div>
+          </div>
+
+          <div
+            className={c('selectorWrapper', {disabled: uploadedImage})}
+            onMouseEnter={!isTouch && (() => setShowModels(true))}
+            onMouseLeave={!isTouch && (() => setShowModels(false))}
+            onTouchStart={
+              isTouch
+                ? e => {
+                    e.stopPropagation()
+                    setShowModels(s => !s)
+                    setShowStyles(false)
+                    setShowPresets(false)
+                    setShowLayouts(false)
+                  }
+                : null
+            }
+          >
+            <p>{models[batchModel].name}</p>
+            <div className={c('selector', {active: showModels})}>
+              <ul>
+                {Object.keys(models).map(key => (
+                  <li key={key}>
+                    <button
+                      className={c('chip', {primary: key === batchModel})}
+                      onClick={() => {
+                        setBatchModel(key)
+                        setShowModels(false)
+                      }}
+                    >
+                      {models[key].name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="label">Model</div>
           </div>
 
           <div>
@@ -341,6 +333,17 @@ export default function App() {
               </div>
             </div>
             <div className="label">Variations</div>
+          </div>
+
+          <div className="flex-break"></div>
+
+          <div>
+            <button
+              className="button primary generate-button"
+              onClick={handleGenerate}
+            >
+              <span className="icon">auto_awesome</span> Generate
+            </button>
           </div>
         </section>
         {feed.length ? (

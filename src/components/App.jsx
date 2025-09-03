@@ -235,6 +235,13 @@ export default function App() {
       </header>
 
       <main>
+        <div className="intro-header">
+          <h2>👋 Welcome to the AI Thumbnail Maker 🖼️</h2>
+          <p>
+            Generate professional, eye-catching YouTube thumbnails in seconds.
+            Just describe your video, pick a style, and let the AI do the work!
+          </p>
+        </div>
         <section className="input-area">
           <div>
             <ImageUploader />

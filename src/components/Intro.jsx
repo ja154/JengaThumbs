@@ -20,12 +20,7 @@ export default function Intro() {
 
   return (
     <section className="intro">
-      <h2>👋 Welcome to the AI Thumbnail Maker 🖼️</h2>
-      <p>
-        Generate professional, eye-catching YouTube thumbnails in seconds. Just
-        describe your video, pick a style, and let the AI do the work! Try a
-        preset prompt below to get started:
-      </p>
+      <p>Or, try a preset prompt below to get started:</p>
 
       {Object.entries(modes).map(([key, mode]) => (
         <div key={key}>

@@ -48,7 +48,7 @@ export default function App() {
 
   const onModifyPrompt = useCallback(prompt => {
     inputRef.current.value = prompt
-    input.current.focus()
+    inputRef.current.focus()
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -264,7 +264,7 @@ export default function App() {
                 : null
             }
           >
-            <input
+            <textarea
               className="promptInput"
               placeholder={
                 uploadedImage
@@ -273,8 +273,9 @@ export default function App() {
               }
               onFocus={!isTouch && (() => setShowPresets(false))}
               ref={inputRef}
+              rows="3"
               onKeyDown={e => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault()
                   handleGenerate()
                 }

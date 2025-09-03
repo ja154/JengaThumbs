@@ -64,6 +64,9 @@ header h1 {
   font-weight: 700;
   white-space: nowrap;
 }
+header h1.logo {
+  animation: fadeInDown 0.6s ease-out;
+}
 header h1 span {
   font-size: 1.2em;
   margin-left: 10px;
@@ -199,7 +202,7 @@ header > div:has(.resetButton) {
   transition: all 0.2s ease-out;
   pointer-events: none;
   z-index: 10;
-  transform: translateY(-6px);
+  transform: translateY(-6px) scale(0.95);
   transform-origin: top;
   max-width: 70vw;
   will-change: opacity, transform;
@@ -208,7 +211,7 @@ header > div:has(.resetButton) {
 .selector.active {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 .selector ul {
   display: flex;
@@ -356,7 +359,7 @@ header > div:has(.resetButton) {
   background: var(--bg-secondary);
   padding: 20px 25px;
   border-radius: 16px;
-  animation: 0.5s fadeInUp ease-out;
+  animation: 0.5s fadeInDown ease-out;
   box-shadow: 0 4px 12px var(--shadow-color-light);
 }
 .feed > li .anchorTop {
@@ -514,7 +517,7 @@ header > div:has(.resetButton) {
 .outputRendering .loader {
   font-size: 32px;
   transform-origin: 50% 50%;
-  animation: spin 1.2s infinite ease-in-out;
+  animation: spinAndPulse 1.2s infinite cubic-bezier(0.5, 0, 0.5, 1);
   line-height: 0;
   color: var(--text-tertiary);
 }
@@ -589,17 +592,18 @@ header > div:has(.resetButton) {
   opacity: 1;
   pointer-events: auto;
 }
-@keyframes spin {
-  0%,
-  20% {
-    transform: rotate(0);
+@keyframes spinAndPulse {
+  0% {
+    transform: rotate(0deg) scale(1);
   }
-  80%,
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
   }
 }
-@keyframes fadeInUp {
+@keyframes fadeInDown {
   0% {
     transform: translateY(-20px);
     opacity: 0;
@@ -764,7 +768,8 @@ button .icon {
 .button.primary {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px var(--shadow-color-light);
+  box-shadow: 0 4px 12px var(--shadow-color-light),
+    0 0 10px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 .button.minor {
   font-size: 12px;
@@ -783,6 +788,12 @@ button .icon {
 .button:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
+}
+.button.primary:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px var(--shadow-color),
+    0 0 20px color-mix(in srgb, var(--primary) 60%, transparent);
 }
 .generate-button {
   height: 42px;
@@ -813,6 +824,7 @@ button .icon {
   background: var(--bg-quinary);
   color: var(--text-primary);
   transform: scale(1.1);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--bg-quinary) 80%, transparent);
 }
 h1 {
   font-size: 22px;
@@ -905,6 +917,28 @@ summary {
   :has(> .tooltip):hover .tooltip.right {
     transform: translate(0, 0);
   }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.intro-header,
+.input-area,
+.intro {
+  animation: slideUp 0.7s ease-out;
+  animation-fill-mode: backwards;
+}
+.input-area {
+  animation-delay: 0.1s;
+}
+.intro {
+  animation-delay: 0.2s;
 }
 .intro-header {
   text-align: center;

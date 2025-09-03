@@ -88,8 +88,8 @@ export default function App() {
     <div className={isIframe ? '' : isDark ? 'dark' : 'light'}>
       <header>
         <div>
-          <h1>
-            AI Thumbnail Maker <span>🖼️</span>
+          <h1 className="logo">
+            ThumbnailSafi <span>🖼️</span>
           </h1>
         </div>
 
@@ -121,7 +121,7 @@ export default function App() {
 
       <main>
         <div className="intro-header">
-          <h2>👋 Welcome to the AI Thumbnail Maker 🖼️</h2>
+          <h2>👋 Welcome to ThumbnailSafi 🖼️</h2>
           <p>
             Generate professional, eye-catching YouTube thumbnails in seconds.
             Just describe your video, pick a style, and let the AI do the work!

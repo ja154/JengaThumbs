@@ -209,105 +209,6 @@ export default function App() {
         </div>
 
         <div>
-          <ImageUploader />
-          <div className="label">Source Image</div>
-        </div>
-
-        <div
-          className="selectorWrapper prompt"
-          onMouseEnter={!isTouch && (() => setShowPresets(true))}
-          onMouseLeave={!isTouch && (() => setShowPresets(false))}
-          onTouchStart={
-            isTouch
-              ? e => {
-                  e.stopPropagation()
-                  setShowPresets(s => !s)
-                  setShowStyles(false)
-                  setShowModels(false)
-                  setShowLayouts(false)
-                }
-              : null
-          }
-        >
-          <input
-            className="promptInput"
-            placeholder={
-              uploadedImage
-                ? 'Describe edits for your image...'
-                : 'Describe your thumbnail...'
-            }
-            onFocus={!isTouch && (() => setShowPresets(false))}
-            ref={inputRef}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleGenerate()
-              }
-            }}
-          />
-          <div className={c('selector', {active: showPresets})}>
-            <ul className="presets wrapped">
-              <li>
-                <button
-                  onClick={() => {
-                    const randomPrompt =
-                      presets[Math.floor(Math.random() * presets.length)]
-                        .prompt
-                    addRound(randomPrompt)
-                    setShowPresets(false)
-                  }}
-                  className="chip primary"
-                >
-                  <span className="icon">Ifl</span>
-                  Random prompt
-                </button>
-              </li>
-
-              {presets.map(({label, prompt}) => (
-                <li key={label}>
-                  <button
-                    onClick={() => {
-                      addRound(prompt)
-                      setShowPresets(false)
-                    }}
-                    className="chip"
-                  >
-                    {label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="label">Prompt</div>
-        </div>
-
-        <div>
-          <button
-            className="button primary generate-button"
-            onClick={handleGenerate}
-          >
-            <span className="icon">auto_awesome</span> Generate
-          </button>
-          <div className="label">&nbsp;</div>
-        </div>
-
-        <div>
-          <div className="rangeWrap">
-            <div className="batchSize">
-              <input
-                type="range"
-                min={1}
-                max={6}
-                value={batchSize}
-                onChange={e => setBatchSize(e.target.valueAsNumber)}
-              />{' '}
-              {batchSize}
-            </div>
-          </div>
-          <div className="label">Variations</div>
-        </div>
-
-        <div>
           <button
             className="circleButton resetButton"
             onClick={() => {
@@ -334,6 +235,106 @@ export default function App() {
       </header>
 
       <main>
+        <section className="input-area">
+          <div>
+            <ImageUploader />
+            <div className="label">Source Image</div>
+          </div>
+
+          <div
+            className="selectorWrapper prompt"
+            onMouseEnter={!isTouch && (() => setShowPresets(true))}
+            onMouseLeave={!isTouch && (() => setShowPresets(false))}
+            onTouchStart={
+              isTouch
+                ? e => {
+                    e.stopPropagation()
+                    setShowPresets(s => !s)
+                    setShowStyles(false)
+                    setShowModels(false)
+                    setShowLayouts(false)
+                  }
+                : null
+            }
+          >
+            <input
+              className="promptInput"
+              placeholder={
+                uploadedImage
+                  ? 'Describe edits for your image...'
+                  : 'Describe your thumbnail...'
+              }
+              onFocus={!isTouch && (() => setShowPresets(false))}
+              ref={inputRef}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleGenerate()
+                }
+              }}
+            />
+            <div className={c('selector', {active: showPresets})}>
+              <ul className="presets wrapped">
+                <li>
+                  <button
+                    onClick={() => {
+                      const randomPrompt =
+                        presets[Math.floor(Math.random() * presets.length)]
+                          .prompt
+                      addRound(randomPrompt)
+                      setShowPresets(false)
+                    }}
+                    className="chip primary"
+                  >
+                    <span className="icon">Ifl</span>
+                    Random prompt
+                  </button>
+                </li>
+
+                {presets.map(({label, prompt}) => (
+                  <li key={label}>
+                    <button
+                      onClick={() => {
+                        addRound(prompt)
+                        setShowPresets(false)
+                      }}
+                      className="chip"
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="label">Prompt</div>
+          </div>
+
+          <div>
+            <button
+              className="button primary generate-button"
+              onClick={handleGenerate}
+            >
+              <span className="icon">auto_awesome</span> Generate
+            </button>
+            <div className="label">&nbsp;</div>
+          </div>
+
+          <div>
+            <div className="rangeWrap">
+              <div className="batchSize">
+                <input
+                  type="range"
+                  min={1}
+                  max={6}
+                  value={batchSize}
+                  onChange={e => setBatchSize(e.target.valueAsNumber)}
+                />{' '}
+                {batchSize}
+              </div>
+            </div>
+            <div className="label">Variations</div>
+          </div>
+        </section>
         {feed.length ? (
           <ul className="feed">
             {feed.map(round => (

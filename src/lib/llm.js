@@ -74,5 +74,5 @@ export default limitFunction(
       }
     }
   },
-  {concurrency: 5}
+  {concurrency: 3}
 )

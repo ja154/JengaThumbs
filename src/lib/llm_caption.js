@@ -72,5 +72,5 @@ Now, generate the complete YouTube video metadata for the given prompt. Strictly
       }
     }
   },
-  {concurrency: 5}
+  {concurrency: 3}
 )

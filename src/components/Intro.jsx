@@ -5,10 +5,10 @@
 import React, {useState} from 'react'
 import shuffle from 'lodash.shuffle'
 import modes from '../lib/modes'
-import {addRound, setOutputMode} from '../lib/actions'
+import {setOutputMode} from '../lib/actions'
 import useStore from '../lib/store'
 
-export default function Intro() {
+export default function Intro({onModifyPrompt}) {
   const [presets] = useState(
     Object.fromEntries(
       Object.entries(modes).map(([key, mode]) => [
@@ -35,7 +35,8 @@ export default function Intro() {
                   <button
                     onClick={() => {
                       setOutputMode(key)
-                      addRound(prompt)
+                      onModifyPrompt(prompt)
+                      scrollTo({top: 0, left: 0, behavior: 'smooth'})
                     }}
                     className="chip"
                   >

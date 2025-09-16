@@ -183,7 +183,7 @@ export default function App() {
                       const randomPrompt =
                         presets[Math.floor(Math.random() * presets.length)]
                           .prompt
-                      addRound(randomPrompt)
+                      onModifyPrompt(randomPrompt)
                       setShowPresets(false)
                     }}
                     className="chip primary"
@@ -197,7 +197,7 @@ export default function App() {
                   <li key={label}>
                     <button
                       onClick={() => {
-                        addRound(prompt)
+                        onModifyPrompt(prompt)
                         setShowPresets(false)
                       }}
                       className="chip"
@@ -366,7 +366,7 @@ export default function App() {
             ))}
           </ul>
         ) : (
-          <Intro />
+          <Intro onModifyPrompt={onModifyPrompt} />
         )}
       </main>
       <FullscreenViewer />

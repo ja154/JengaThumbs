@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {useEffect, useState, useCallback, useRef} from 'react'
+import React, {useEffect, useState, useCallback, useRef} from 'react'
 import shuffle from 'lodash.shuffle'
 import c from 'clsx'
 import modes from '../lib/modes'

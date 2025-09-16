@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {memo, useEffect, useRef, useState} from 'react'
+import React, {memo, useEffect, useRef, useState} from 'react'
 import {outputWidth} from '../lib/consts'
 import modes from '../lib/modes'
 

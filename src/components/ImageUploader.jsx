@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {useCallback} from 'react'
+import React, {useCallback} from 'react'
 import useStore from '../lib/store'
 import {setUploadedImage} from '../lib/actions'
 

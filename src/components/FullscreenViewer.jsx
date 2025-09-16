@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {useEffect} from 'react'
+import React, {useEffect} from 'react'
 import useStore from '../lib/store'
 import {hideFullscreen} from '../lib/actions'
 

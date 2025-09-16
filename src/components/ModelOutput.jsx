@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {useEffect, useState, memo} from 'react'
+import React, {useEffect, useState, memo} from 'react'
 import c from 'clsx'
 import models from '../lib/models'
 import modes from '../lib/modes'

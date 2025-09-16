@@ -32,7 +32,7 @@ function ModelOutput({roundId, output}) {
 
   const [time, setTime] = useState(0)
   const [copied, setCopied] = useState(false)
-  const [captionCopied, setCaptionCopied] = useState(false)
+  const [copiedStates, setCopiedStates] = useState({})
   const [editedPrompt, setEditedPrompt] = useState(prompt)
   const isImageOutput = modes[outputMode]?.imageOutput
 
@@ -63,12 +63,13 @@ function ModelOutput({roundId, output}) {
     }
   }
 
-  const copyCaption = () => {
-    if (caption) {
-      navigator.clipboard.writeText(caption.trim())
-      setCaptionCopied(true)
-      setTimeout(() => setCaptionCopied(false), 2000)
-    }
+  const copyToClipboard = (text, key) => {
+    if (!text) return
+    navigator.clipboard.writeText(text.trim())
+    setCopiedStates(prev => ({...prev, [key]: true}))
+    setTimeout(() => {
+      setCopiedStates(prev => ({...prev, [key]: false}))
+    }, 2000)
   }
 
   useEffect(() => {
@@ -91,6 +92,37 @@ function ModelOutput({roundId, output}) {
     setEditedPrompt(prompt)
     setOutputEditing(roundId, id, false)
   }
+
+  const parseCaption = captionStr => {
+    if (!captionStr) return null
+
+    const sections = {
+      title: '',
+      description: '',
+      tags: ''
+    }
+
+    const titleMatch = captionStr.match(
+      /🎬 Title\s*([\s\S]*?)(?=\n\n📝 Description|\n\n🏷️ Tags|$)/
+    )
+    if (titleMatch) sections.title = titleMatch[1].trim()
+
+    const descriptionMatch = captionStr.match(
+      /📝 Description \(SEO-Ready\)\s*([\s\S]*?)(?=\n\n🏷️ Tags|$)/
+    )
+    if (descriptionMatch) sections.description = descriptionMatch[1].trim()
+
+    const tagsMatch = captionStr.match(/🏷️ Tags\s*([\s\S]*)$/)
+    if (tagsMatch) sections.tags = tagsMatch[1].trim()
+
+    if (!sections.title && !sections.description && !sections.tags) {
+      return {raw: captionStr}
+    }
+
+    return sections
+  }
+
+  const parsedCaption = parseCaption(caption)
 
   const editorUi = (
     <div className="editorUi">
@@ -185,24 +217,94 @@ function ModelOutput({roundId, output}) {
 
       {(caption || isGeneratingCaption || captionError) && (
         <div className="captionContainer">
-          <div className="captionHeader">
-            <h4>✍️ Suggested Caption</h4>
-            {caption && (
-              <button className="iconButton" onClick={copyCaption}>
-                <span className="icon">content_copy</span>
-                <span className="tooltip right">
-                  {captionCopied ? 'Copied!' : 'Copy caption'}
-                </span>
-              </button>
-            )}
-          </div>
           {isGeneratingCaption ? (
             <p className="captionStatus">Generating caption...</p>
           ) : captionError ? (
             <p className="captionStatus error">Could not generate caption.</p>
-          ) : (
-            <p className="captionText">{caption}</p>
-          )}
+          ) : parsedCaption ? (
+            parsedCaption.raw ? (
+              <div className="captionCard">
+                <div className="captionHeader">
+                  <h4>✍️ Suggested Caption</h4>
+                  <button
+                    className="iconButton"
+                    onClick={() => copyToClipboard(parsedCaption.raw, 'raw')}
+                  >
+                    <span className="icon">content_copy</span>
+                    <span className="tooltip right">
+                      {copiedStates.raw ? 'Copied!' : 'Copy caption'}
+                    </span>
+                  </button>
+                </div>
+                <p className="captionText">{parsedCaption.raw}</p>
+              </div>
+            ) : (
+              <>
+                {parsedCaption.title && (
+                  <div className="captionCard">
+                    <div className="captionHeader">
+                      <h4>🎬 Title</h4>
+                      <button
+                        className="iconButton"
+                        onClick={() =>
+                          copyToClipboard(parsedCaption.title, 'title')
+                        }
+                      >
+                        <span className="icon">content_copy</span>
+                        <span className="tooltip right">
+                          {copiedStates.title ? 'Copied!' : 'Copy title'}
+                        </span>
+                      </button>
+                    </div>
+                    <p className="captionText">{parsedCaption.title}</p>
+                  </div>
+                )}
+                {parsedCaption.description && (
+                  <div className="captionCard">
+                    <div className="captionHeader">
+                      <h4>📝 Description</h4>
+                      <button
+                        className="iconButton"
+                        onClick={() =>
+                          copyToClipboard(
+                            parsedCaption.description,
+                            'description'
+                          )
+                        }
+                      >
+                        <span className="icon">content_copy</span>
+                        <span className="tooltip right">
+                          {copiedStates.description
+                            ? 'Copied!'
+                            : 'Copy description'}
+                        </span>
+                      </button>
+                    </div>
+                    <p className="captionText">{parsedCaption.description}</p>
+                  </div>
+                )}
+                {parsedCaption.tags && (
+                  <div className="captionCard">
+                    <div className="captionHeader">
+                      <h4>🏷️ Tags</h4>
+                      <button
+                        className="iconButton"
+                        onClick={() =>
+                          copyToClipboard(parsedCaption.tags, 'tags')
+                        }
+                      >
+                        <span className="icon">content_copy</span>
+                        <span className="tooltip right">
+                          {copiedStates.tags ? 'Copied!' : 'Copy tags'}
+                        </span>
+                      </button>
+                    </div>
+                    <p className="captionText">{parsedCaption.tags}</p>
+                  </div>
+                )}
+              </>
+            )
+          ) : null}
         </div>
       )}
     </div>

@@ -1024,11 +1024,16 @@ summary {
 }
 .captionContainer {
   margin-top: 15px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.captionCard {
   padding: 15px;
   background: var(--bg-tertiary);
   border-radius: 8px;
   border: 1px solid var(--border-primary);
-  font-size: 13px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1050,6 +1055,10 @@ summary {
 }
 .captionStatus {
   color: var(--text-tertiary);
+  padding: 15px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
 }
 .captionStatus.error {
   color: var(--error);

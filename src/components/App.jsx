@@ -63,6 +63,25 @@ export default function App() {
     }
   }, [])
 
+  const handlePromptFocus = useCallback(() => {
+    if (inputRef.current?.value.trim() === '') {
+      setShowPresets(true)
+    }
+  }, [])
+
+  const handlePromptBlur = useCallback(() => {
+    // Delay to allow clicking on a preset
+    setTimeout(() => {
+      setShowPresets(false)
+    }, 200)
+  }, [])
+
+  const handlePromptInput = useCallback(() => {
+    if (inputRef.current) {
+      setShowPresets(inputRef.current.value.trim() === '')
+    }
+  }, [])
+
   useEffect(() => {
     shufflePresets()
   }, [shufflePresets])
@@ -135,19 +154,7 @@ export default function App() {
 
           <div
             className="selectorWrapper prompt"
-            onMouseEnter={!isTouch && (() => setShowPresets(true))}
-            onMouseLeave={!isTouch && (() => setShowPresets(false))}
-            onTouchStart={
-              isTouch
-                ? e => {
-                    e.stopPropagation()
-                    setShowPresets(s => !s)
-                    setShowStyles(false)
-                    setShowModels(false)
-                    setShowLayouts(false)
-                  }
-                : null
-            }
+            onTouchStart={isTouch ? e => e.stopPropagation() : undefined}
           >
             <textarea
               className="promptInput"
@@ -156,7 +163,9 @@ export default function App() {
                   ? 'Describe edits for your image...'
                   : 'Describe your thumbnail...'
               }
-              onFocus={!isTouch && (() => setShowPresets(false))}
+              onFocus={handlePromptFocus}
+              onBlur={handlePromptBlur}
+              onInput={handlePromptInput}
               ref={inputRef}
               rows="3"
               onKeyDown={e => {

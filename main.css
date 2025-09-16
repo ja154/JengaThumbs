@@ -1011,6 +1011,48 @@ summary {
   color: var(--text-primary);
   border: 1px solid var(--border-primary);
 }
+.crop-modal {
+  background: var(--bg-secondary);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  width: 90vw;
+  max-width: 1000px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid var(--border-primary);
+}
+.crop-modal h3 {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+.crop-container {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+}
+.crop-container .ReactCrop {
+  max-height: 65vh;
+}
+.crop-container .ReactCrop__image {
+  max-height: 65vh;
+  object-fit: contain;
+}
+.crop-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.ReactCrop__crop-selection {
+  border: 2px dashed var(--primary);
+}
 @keyframes float {
   0% {
     transform: translateY(-2px);

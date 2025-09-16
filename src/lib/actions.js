@@ -30,18 +30,43 @@ const newOutput = (model, mode, prompt) => ({
   captionError: false
 })
 
+const getSystemInstruction = (outputMode, uploadedImage) => {
+  const originalSystemInstruction = modes[outputMode].systemInstruction
+
+  if (uploadedImage) {
+    const styleInstructionPart = 'The specific art style is:'
+    const styleInstructionIndex =
+      originalSystemInstruction.indexOf(styleInstructionPart)
+
+    const styleInstruction =
+      styleInstructionIndex !== -1
+        ? originalSystemInstruction
+            .substring(styleInstructionIndex + styleInstructionPart.length)
+            .trim()
+        : 'a modern, high-impact style.' // Fallback style
+
+    const newBaseInstruction = `You are a world-class photo editor and YouTube thumbnail designer. Your primary task is to use the person from the user-provided image to create a new, professional 16:9 YouTube thumbnail.
+
+**CRITICAL INSTRUCTIONS (MUST be followed):**
+1.  **USE THE PROVIDED PERSON:** You MUST identify and perfectly extract the main person from the provided image. DO NOT generate a new person or character. The person in the original photo is the star of the thumbnail.
+2.  **CREATE A NEW SCENE:** Discard the original background completely. Create a new, dynamic, and professional background that fits the requested style.
+3.  **COMPOSITE AND DESIGN:** Place the extracted person onto the new background. Add the requested text in a large, bold, and highly readable font. The final composition must be a compelling 16:9 landscape thumbnail.
+4.  **FINAL ASPECT RATIO:** The final output image MUST be in a 16:9 landscape aspect ratio.
+
+The specific art style for the new background and overall feel is:`
+
+    return `${newBaseInstruction} ${styleInstruction}`
+  }
+
+  return originalSystemInstruction
+}
+
 export const addRound = prompt => {
   scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
   const {outputMode, batchSize, batchModel, layout, uploadedImage} = get()
 
-  let systemInstruction = modes[outputMode].systemInstruction
-  if (uploadedImage) {
-    systemInstruction = systemInstruction.replace(
-      'creating a 16:9 YouTube thumbnail',
-      'editing the provided image to turn it into a 16:9 YouTube thumbnail'
-    )
-  }
+  const systemInstruction = getSystemInstruction(outputMode, uploadedImage)
 
   const layoutInstruction = layouts[layout].instruction
   const fullPrompt = `${systemInstruction}\n\n${
@@ -129,18 +154,12 @@ export const regenerateOutput = (roundId, outputId, newPrompt) => {
   const output = round.outputs.find(o => o.id === outputId)
   if (!output) return
 
-  const {uploadedImage} = round
+  const {uploadedImage, outputMode, layout} = round
 
-  let systemInstruction = round.systemInstruction
-  if (uploadedImage) {
-    systemInstruction = systemInstruction.replace(
-      'creating a 16:9 YouTube thumbnail',
-      'editing the provided image to turn it into a 16:9 YouTube thumbnail'
-    )
-  }
+  const systemInstruction = getSystemInstruction(outputMode, uploadedImage)
 
   const layoutInstruction =
-    round.layout && layouts[round.layout] ? layouts[round.layout].instruction : ''
+    layout && layouts[layout] ? layouts[layout].instruction : ''
   const fullPrompt = `${systemInstruction}\n\n${
     layoutInstruction ? `Layout instruction: ${layoutInstruction}\n\n` : ''
   }${newPrompt}`

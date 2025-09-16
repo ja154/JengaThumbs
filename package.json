@@ -18,6 +18,7 @@
     "p-limit": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-image-crop": "11.0.5",
     "react-syntax-highlighter": "latest",
     "zustand": "latest"
   },

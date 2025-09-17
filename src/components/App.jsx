@@ -24,6 +24,29 @@ import Intro from './Intro'
 import FullscreenViewer from './FullscreenViewer'
 import ImageUploader from './ImageUploader'
 
+function EditingTools({onModifyPrompt}) {
+  const tools = [
+    {label: 'Change background', prompt: 'Change the background to '},
+    {label: 'Remove something', prompt: 'Remove the '},
+    {label: 'Add something', prompt: 'Add a '},
+    {label: 'Change my clothes', prompt: 'Change my clothes to '},
+    {label: 'Change expression', prompt: 'Make me look more '},
+    {label: 'Apply a filter', prompt: 'Apply a filter, making it look '}
+  ]
+
+  return (
+    <ul className="editing-tools">
+      {tools.map(({label, prompt}) => (
+        <li key={label}>
+          <button onClick={() => onModifyPrompt(prompt)} className="chip">
+            {label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export default function App() {
   const feed = useStore.use.feed()
   const outputMode = useStore.use.outputMode()
@@ -64,10 +87,10 @@ export default function App() {
   }, [])
 
   const handlePromptFocus = useCallback(() => {
-    if (inputRef.current?.value.trim() === '') {
+    if (inputRef.current?.value.trim() === '' && !uploadedImage) {
       setShowPresets(true)
     }
-  }, [])
+  }, [uploadedImage])
 
   const handlePromptBlur = useCallback(() => {
     // Delay to allow clicking on a preset
@@ -78,9 +101,9 @@ export default function App() {
 
   const handlePromptInput = useCallback(() => {
     if (inputRef.current) {
-      setShowPresets(inputRef.current.value.trim() === '')
+      setShowPresets(inputRef.current.value.trim() === '' && !uploadedImage)
     }
-  }, [])
+  }, [uploadedImage])
 
   useEffect(() => {
     shufflePresets()
@@ -175,7 +198,12 @@ export default function App() {
                 }
               }}
             />
-            <div className={c('selector', {active: showPresets})}>
+            {uploadedImage && <EditingTools onModifyPrompt={onModifyPrompt} />}
+            <div
+              className={c('selector', {
+                active: showPresets && !uploadedImage
+              })}
+            >
               <ul className="presets wrapped">
                 <li>
                   <button

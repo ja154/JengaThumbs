@@ -228,6 +228,18 @@ header > div:has(.resetButton) {
 .selector ul.presets .chip {
   white-space: normal;
 }
+.editing-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
+}
+.editing-tools .chip {
+  white-space: normal;
+  text-align: left;
+}
 .selector .chip {
   padding: 8px 12px;
   border-radius: 6px;

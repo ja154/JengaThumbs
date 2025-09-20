@@ -16,13 +16,98 @@ import {
   setBatchModel,
   reset,
   setLayout,
-  setUploadedImage
+  setUploadedImage,
+  startAiEditing,
+  cancelAiEditing,
+  applyAiEdit
 } from '../lib/actions'
 import {isTouch, isIframe} from '../lib/consts'
 import FeedItem from './FeedItem'
 import Intro from './Intro'
 import FullscreenViewer from './FullscreenViewer'
 import ImageUploader from './ImageUploader'
+
+function AiEditorModal() {
+  const aiEditingOutput = useStore.use.aiEditingOutput()
+  const [editPrompt, setEditPrompt] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleApplyEdit = async () => {
+    if (!editPrompt.trim() || !aiEditingOutput) return
+    setIsEditing(true)
+    setError(null)
+    try {
+      await applyAiEdit(editPrompt)
+      setEditPrompt('')
+    } catch (err) {
+      setError('Failed to apply edit. Please try again.')
+      console.error(err)
+    } finally {
+      setIsEditing(false)
+    }
+  }
+
+  const handleKeyDown = e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault()
+      handleApplyEdit()
+    }
+  }
+
+  if (!aiEditingOutput) return null
+
+  return (
+    <div className="fullscreen-overlay">
+      <div className="crop-modal ai-editor-modal">
+        <h3>AI In-depth Editor</h3>
+        <div className="ai-editor-content">
+          <div className="ai-editor-image-container">
+            <img src={aiEditingOutput.imageData} alt="Editing target" />
+            {isEditing && (
+              <div className="loader">
+                <span className="icon">hourglass</span>
+              </div>
+            )}
+          </div>
+          <div className="ai-editor-controls">
+            <p>Describe the changes you want to make to the image:</p>
+            <textarea
+              placeholder="e.g., 'Add a party hat on the person', 'Change the background to a beach scene'"
+              value={editPrompt}
+              onChange={e => setEditPrompt(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isEditing}
+            />
+            {error && <p className="error-message">{error}</p>}
+            <div className="crop-actions">
+              <button
+                className="button minor"
+                onClick={cancelAiEditing}
+                disabled={isEditing}
+              >
+                Done
+              </button>
+              <button
+                className="button primary"
+                onClick={handleApplyEdit}
+                disabled={isEditing || !editPrompt.trim()}
+              >
+                {isEditing ? (
+                  'Applying...'
+                ) : (
+                  <>
+                    <span className="icon">auto_fix_high</span> Apply Edit
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function EditingTools({onModifyPrompt}) {
   const tools = [
@@ -398,6 +483,7 @@ export default function App() {
         )}
       </main>
       <FullscreenViewer />
+      <AiEditorModal />
     </div>
   )
 }

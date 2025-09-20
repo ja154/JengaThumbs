@@ -23,7 +23,8 @@ export default createSelectorFunctions(
       versusModels: {},
       fullscreenImageUrl: null,
       uploadedImage: null,
-      previousBatchModel: null
+      previousBatchModel: null,
+      aiEditingOutput: null
     }))
   )
 )

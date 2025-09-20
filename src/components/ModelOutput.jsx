@@ -9,7 +9,8 @@ import modes from '../lib/modes'
 import {
   showFullscreen,
   setOutputEditing,
-  regenerateOutput
+  regenerateOutput,
+  startAiEditing
 } from '../lib/actions'
 import Renderer from './Renderer'
 
@@ -198,6 +199,15 @@ function ModelOutput({roundId, output}) {
               <span className="icon">download</span>
               <span className="tooltip">Download image</span>
             </a>
+          )}
+          {isImageOutput && (
+            <button
+              className="iconButton"
+              onClick={() => startAiEditing(roundId, id)}
+            >
+              <span className="icon">auto_fix_high</span>
+              <span className="tooltip">AI In-depth Edit</span>
+            </button>
           )}
           <button
             className="iconButton"

@@ -5,7 +5,7 @@
 import useStore from './store'
 import modes from './modes'
 import layouts from './layouts'
-import llmGen from './llm'
+import {llmGen} from './llm'
 import llmCaptionGen from './llm_caption'
 import models from './models'
 
@@ -316,4 +316,53 @@ export const setUploadedImage = imageData => {
       }
     })
   }
+}
+
+export const startAiEditing = (roundId, outputId) => {
+  const round = get().feed.find(r => r.id === roundId)
+  if (!round) return
+  const output = round.outputs.find(o => o.id === outputId)
+  if (!output || !output.outputData) return
+
+  set(state => {
+    state.aiEditingOutput = {
+      roundId,
+      outputId,
+      imageData: output.outputData
+    }
+  })
+}
+
+export const cancelAiEditing = () => {
+  set(state => {
+    state.aiEditingOutput = null
+  })
+}
+
+export const applyAiEdit = async editPrompt => {
+  const {aiEditingOutput} = get()
+  if (!aiEditingOutput) return
+
+  const {roundId, outputId, imageData} = aiEditingOutput
+
+  const newImageData = await llmGen({
+    model: 'gemini-2.5-flash-image-preview',
+    prompt: editPrompt,
+    image: imageData
+  })
+
+  set(state => {
+    const round = state.feed.find(r => r.id === roundId)
+    if (round) {
+      const output = round.outputs.find(o => o.id === outputId)
+      if (output) {
+        output.outputData = newImageData
+        output.prompt += ` | Edited with: ${editPrompt}`
+      }
+    }
+
+    if (state.aiEditingOutput) {
+      state.aiEditingOutput.imageData = newImageData
+    }
+  })
 }

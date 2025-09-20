@@ -9,7 +9,7 @@ const ai = new GoogleGenAI({apiKey: process.env.API_KEY})
 const maxRetries = 3
 const baseDelay = 1000
 
-export default limitFunction(
+export const llmGen = limitFunction(
   async ({model, prompt, image}) => {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {

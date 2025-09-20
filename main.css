@@ -1121,3 +1121,76 @@ summary {
   flex-basis: 100%;
   height: 0;
 }
+.ai-editor-modal {
+  max-width: 1200px;
+}
+.ai-editor-content {
+  display: flex;
+  gap: 20px;
+  flex-grow: 1;
+  min-height: 0;
+}
+.ai-editor-image-container {
+  flex: 2;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ai-editor-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  height: 100%;
+}
+.ai-editor-image-container .loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+  backdrop-filter: blur(5px);
+  font-size: 48px;
+  color: var(--text-primary);
+  z-index: 10;
+}
+.ai-editor-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.ai-editor-controls p {
+  color: var(--text-secondary);
+}
+.ai-editor-controls textarea {
+  flex-grow: 1;
+  min-height: 150px;
+  padding: 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: var(--bg-tertiary);
+}
+.ai-editor-controls textarea:focus {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+.ai-editor-controls .error-message {
+  color: var(--error);
+  font-size: 13px;
+}
+@media (max-width: 768px) {
+  .ai-editor-content {
+    flex-direction: column;
+  }
+  .ai-editor-image-container {
+    min-height: 250px;
+  }
+}

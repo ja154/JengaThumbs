@@ -20,7 +20,8 @@
     "react-dom": "latest",
     "react-image-crop": "11.0.5",
     "react-syntax-highlighter": "latest",
-    "zustand": "latest"
+    "zustand": "latest",
+    "zustand/middleware": "latest"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

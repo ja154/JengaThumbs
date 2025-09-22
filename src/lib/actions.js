@@ -261,8 +261,23 @@ export const removeRound = id =>
 
 export const reset = () => {
   set(state => {
-    state.feed = []
-  })
+    // Archive rounds that have at least one successful output
+    const successfulRounds = state.feed.filter(round =>
+      round.outputs.some(output => output.outputData && !output.gotError)
+    );
+    if (successfulRounds.length > 0) {
+      // Add to history, avoiding duplicates by checking round ID
+      const historyIds = new Set(state.history.map(r => r.id));
+      const roundsToArchive = successfulRounds.filter(r => !historyIds.has(r.id));
+      state.history.unshift(...roundsToArchive);
+    }
+    state.feed = [];
+    state.uploadedImage = null;
+    if (state.previousBatchModel) {
+      state.batchModel = state.previousBatchModel;
+      state.previousBatchModel = null;
+    }
+  });
 }
 
 export const showFullscreen = url => {
@@ -366,3 +381,25 @@ export const applyAiEdit = async editPrompt => {
     }
   })
 }
+
+// History actions
+export const showHistory = () => set(state => { state.isHistoryVisible = true; });
+export const hideHistory = () => set(state => { state.isHistoryVisible = false; });
+
+export const deleteFromHistory = roundId => set(state => {
+  state.history = state.history.filter(round => round.id !== roundId);
+});
+
+export const clearHistory = () => set(state => { state.history = []; });
+
+export const restoreFromHistory = roundId => set(state => {
+  const roundToRestore = state.history.find(round => round.id === roundId);
+  if (roundToRestore) {
+    // Add to feed if not already there
+    if (!state.feed.some(r => r.id === roundId)) {
+      state.feed.unshift({...roundToRestore});
+    }
+    state.isHistoryVisible = false;
+    scrollTo({top: 0, left: 0, behavior: 'smooth'});
+  }
+});

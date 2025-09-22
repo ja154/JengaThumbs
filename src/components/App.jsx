@@ -19,13 +19,15 @@ import {
   setUploadedImage,
   startAiEditing,
   cancelAiEditing,
-  applyAiEdit
+  applyAiEdit,
+  showHistory
 } from '../lib/actions'
 import {isTouch, isIframe} from '../lib/consts'
 import FeedItem from './FeedItem'
 import Intro from './Intro'
 import FullscreenViewer from './FullscreenViewer'
 import ImageUploader from './ImageUploader'
+import HistoryModal from './HistoryModal'
 
 function AiEditorModal() {
   const aiEditingOutput = useStore.use.aiEditingOutput()
@@ -139,6 +141,7 @@ export default function App() {
   const batchSize = useStore.use.batchSize()
   const layout = useStore.use.layout()
   const uploadedImage = useStore.use.uploadedImage()
+  const isHistoryVisible = useStore.use.isHistoryVisible()
 
   const [presets, setPresets] = useState([])
   const [showPresets, setShowPresets] = useState(false)
@@ -223,10 +226,19 @@ export default function App() {
         <div>
           <button
             className="circleButton resetButton"
+            onClick={showHistory}
+          >
+            <span className="icon">history</span>
+          </button>
+          <div className="label">History</div>
+        </div>
+
+        <div>
+          <button
+            className="circleButton resetButton"
             onClick={() => {
               reset()
               inputRef.current.value = ''
-              setUploadedImage(null)
             }}
           >
             <span className="icon">replay</span>
@@ -484,6 +496,7 @@ export default function App() {
       </main>
       <FullscreenViewer />
       <AiEditorModal />
+      {isHistoryVisible && <HistoryModal />}
     </div>
   )
 }

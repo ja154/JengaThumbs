@@ -71,7 +71,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { GoogleGenAI } = await import('https://esm.sh/@google/genai');
+    const { GoogleGenAI } = await import('@google/genai');
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const caption = await generateCaptionWithRetry(ai, req.body);

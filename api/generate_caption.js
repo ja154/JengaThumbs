@@ -5,8 +5,7 @@
 const maxRetries = 3;
 const baseDelay = 1000;
 
-async function generateCaptionWithRetry(ai, { prompt }) {
-    const fullPrompt = `You are an expert YouTube content strategist. Your task is to generate all the necessary text metadata for a YouTube video based on a prompt for its thumbnail. The output must be comprehensive, SEO-friendly, and strictly follow the format of the example below.
+const systemInstruction = `You are an expert YouTube content strategist. Your task is to generate all the necessary text metadata for a YouTube video based on a prompt for its thumbnail. The output must be comprehensive, SEO-friendly, and strictly follow the format of the example below.
 
 ---
 **EXAMPLE START**
@@ -42,15 +41,17 @@ Leopold Aschenbrenner, Situational Awareness, AGI 2027, Artificial General Intel
 **EXAMPLE END**
 ---
 
-Here is the thumbnail prompt you must use: "${prompt}"
+Now, generate the complete YouTube video metadata for the given thumbnail prompt. Strictly adhere to the format from the example above. Do not include the "**EXAMPLE START**" or "**EXAMPLE END**" markers in your output.`;
 
-Now, generate the complete YouTube video metadata for the given prompt. Strictly adhere to the format from the example above. Do not include the "**EXAMPLE START**" or "**EXAMPLE END**" markers in your output.`;
-
+async function generateCaptionWithRetry(ai, { prompt }) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
             const response = await ai.models.generateContent({
               model: 'gemini-2.5-flash',
-              contents: fullPrompt
+              contents: prompt,
+              config: {
+                systemInstruction: systemInstruction,
+              },
             });
             return response.text;
         } catch (error) {

@@ -434,6 +434,7 @@ header > div:has(.resetButton) {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
 }
 .modelOutput .renderer {
   position: relative;
@@ -1116,6 +1117,16 @@ summary {
 }
 .captionStatus.error {
   color: var(--error);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--error);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  z-index: 10;
+  border-radius: 12px 12px 0 0;
 }
 .flex-break {
   flex-basis: 100%;

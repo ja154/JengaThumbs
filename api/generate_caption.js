@@ -47,8 +47,8 @@ async function generateCaptionWithRetry(ai, { prompt }) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
             const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash',
-              contents: prompt,
+              model: 'gemini-1.5-flash',
+              contents: [{role: 'user', parts: [{text: prompt}]}],
               config: {
                 systemInstruction: systemInstruction,
               },

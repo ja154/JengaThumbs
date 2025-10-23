@@ -12,7 +12,7 @@ export default {
   gemini_image_editor: {
     name: 'Gemini Image Editor',
     version: '2.5 Flash',
-    modelString: 'gemini-2.5-flash-image-preview',
+    modelString: 'gemini-2.5-flash-image',
     type: 'image-editing'
   }
 }

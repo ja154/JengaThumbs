@@ -33,12 +33,12 @@ async function generateWithRetry(ai, { model, prompt, image }) {
           text: prompt,
         };
   
-        const { Modality } = await import('@google/genai');
+        const { Modality } = await import('https://esm.sh/@google/genai');
         const response = await ai.models.generateContent({
           model,
           contents: { parts: [imagePart, textPart] },
           config: {
-            responseModalities: [Modality.IMAGE, Modality.TEXT],
+            responseModalities: [Modality.IMAGE],
           },
         });
   
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { GoogleGenAI } = await import('@google/genai');
+    const { GoogleGenAI } = await import('https://esm.sh/@google/genai');
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const result = await generateWithRetry(ai, req.body);

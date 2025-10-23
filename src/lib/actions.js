@@ -361,7 +361,7 @@ export const applyAiEdit = async editPrompt => {
   const {roundId, outputId, imageData} = aiEditingOutput
 
   const newImageData = await llmGen({
-    model: 'gemini-2.5-flash-image-preview',
+    model: 'gemini-2.5-flash-image',
     prompt: editPrompt,
     image: imageData
   })

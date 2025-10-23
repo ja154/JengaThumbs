@@ -149,6 +149,8 @@ export default function App() {
   const [showModels, setShowModels] = useState(false)
   const [showLayouts, setShowLayouts] = useState(false)
   const [isDark, setIsDark] = useState(true)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisError, setAnalysisError] = useState(null)
 
   const inputRef = useRef(null)
 
@@ -179,6 +181,40 @@ export default function App() {
       setShowPresets(true)
     }
   }, [uploadedImage])
+  
+  const handlePromptInput = useCallback(() => {
+    if (inputRef.current) {
+      setShowPresets(inputRef.current.value.trim() === '' && !uploadedImage)
+    }
+  }, [uploadedImage])
+  
+  const handleAnalyzeImage = useCallback(async () => {
+    if (!uploadedImage) return
+    setIsAnalyzing(true)
+    setAnalysisError(null)
+    try {
+      const response = await fetch('/api/analyze_image', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({image: uploadedImage})
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to analyze image.')
+      }
+      const {description} = await response.json()
+      if (inputRef.current) {
+        inputRef.current.value = description
+        inputRef.current.focus()
+        handlePromptInput()
+      }
+    } catch (err) {
+      setAnalysisError(err.message)
+      console.error(err)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }, [uploadedImage, handlePromptInput])
 
   const handlePromptBlur = useCallback(() => {
     // Delay to allow clicking on a preset
@@ -186,12 +222,6 @@ export default function App() {
       setShowPresets(false)
     }, 200)
   }, [])
-
-  const handlePromptInput = useCallback(() => {
-    if (inputRef.current) {
-      setShowPresets(inputRef.current.value.trim() === '' && !uploadedImage)
-    }
-  }, [uploadedImage])
 
   useEffect(() => {
     shufflePresets()
@@ -271,6 +301,24 @@ export default function App() {
             <ImageUploader />
             <div className="label">Source Image</div>
           </div>
+
+          {uploadedImage && (
+            <div>
+              <button
+                className="button"
+                onClick={handleAnalyzeImage}
+                disabled={isAnalyzing}
+                style={{ height: '42px' }}
+              >
+                <span className="icon">psychology</span>{' '}
+                {isAnalyzing ? 'Analyzing...' : 'Analyze Image'}
+              </button>
+              <div className="label">AI Assistant</div>
+              {analysisError && (
+                <p className="error-message">{analysisError}</p>
+              )}
+            </div>
+          )}
 
           <div
             className="selectorWrapper prompt"

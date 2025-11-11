@@ -47,7 +47,7 @@ async function generateCaptionWithRetry(ai, { prompt }) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
             const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash',
+              model: 'gemini-1.5-flash',
               contents: prompt,
               config: {
                 systemInstruction: systemInstruction,
@@ -71,8 +71,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { GoogleGenAI } = await import('https://esm.sh/@google/genai');
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI(process.env.API_KEY);
     
     const caption = await generateCaptionWithRetry(ai, req.body);
     res.status(200).json({ caption });
